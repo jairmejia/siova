@@ -16,20 +16,22 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
     # ('Leidy Johanna Reyes Ruiz', 'leidyjreyes@gmail.com'),
     # ('Gustavo Adolfo Gómez Gómez', 'guado0419@gmail.com'),
+    # ('Jair Arlando Mejia Ferreira', 'jairmejia06@hotmail.com'),
 )
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', 
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg
         'NAME': 'siova',
         'USER': 'root', 
-        'PASSWORD': 'siova_virtual',
+        'PASSWORD': 'jairmejia',
         'HOST': 'localhost',
         'PORT': '', 
     }
 }
+
 
 AUTH_PROFILE_MODULE = 'gestorObjetos.UserProfile'
 
@@ -125,6 +127,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(RUTA_PROYECTO,'plantillas'),
+    os.path.join(RUTA_PROYECTO,'plantillas1'),
 )
 
 INSTALLED_APPS = (
@@ -134,11 +137,10 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     'gestorObjetos',
+    'gestorProyectos',
     'filetransfers',
 
 )

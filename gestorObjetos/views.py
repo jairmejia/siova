@@ -16,6 +16,7 @@ import operator
 from django.contrib import messages
 from gestorObjetos.models import Repositorio, Objeto, Autor, RutaCategoria, EspecificacionLOM, PalabraClave
 from gestorObjetos.forms import EspecificacionForm, cEspecificacionForm, ObjetosForm, cObjetosForm
+from gestorProyectos.models import Proyecto
 import datetime
 from filetransfers.api import serve_file
 import siova.lib.Opciones as opc
@@ -163,7 +164,7 @@ def objeto(request, id_objeto):
 	"""
 	En esta vista se desplegarán la información del Objeto seleccionado
 	"""
-	obj=get_object_or_404(Objeto, pk=id_objeto)#anteriormente tenía obj=Objeto.objects.get(pk=id_objeto), lo cual generaba un error 500 al no encontrarlo, por eso la mejor opción es esta
+	obj=Objeto.objects.get(pk=id_objeto)
 	gruposobj = obj.repositorio.grupos.all()
 	gruposu = request.user.groups.all()
 	puedever=False
@@ -327,7 +328,7 @@ def editObjeto(request,id_objeto):
 	"""
 	Vista de acceso al usuario con rol de Docente, de esta manera se le permitirá modificar objetos
 	"""
-	obj=get_object_or_404(Objeto, pk=id_objeto)
+	obj=Objeto.objects.get(pk=id_objeto)#objeto que se está modificando
 	kws=obj.palabras_claves.all()#palabras claves del objeto
 	if request.user.profile.rol == 'rdoc':
 		if obj.creador == request.user:
@@ -447,6 +448,7 @@ Vista para la gestión de la descargar del objeto desde la interfaz de edición 
 """
 def downloadEdit(request, id):
 	codigo_espec_archivo=int(id.split('.')[0].split('_')[1])#toma el id (nombre del archivo) y toma la parte que corresponde al pk del espec del archivo
+	#f=Objeto.objects.get(archivo=miarchivo.file)
 	f= get_object_or_404(Objeto, espec_lom=codigo_espec_archivo)
 	gruposobj = f.repositorio.grupos.all()
 	gruposu = request.user.groups.all()

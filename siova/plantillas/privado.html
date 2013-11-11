@@ -7,6 +7,12 @@
 	{% if usuario.profile.rol = 'radm' %}
 		<li><a class="menusbtn" href="/admin">Administrador</a></li>
 	{% endif %}
+	{% if usuario.profile.rol = 'rcat' %}
+		<li><a class="menusbtn" href="/proyecto">Proyectos</a></li>
+	{% endif %}
+	{% if usuario.profile.rol = 'rrev' %}
+		<li><a class="menusbtn" href="/proyecto">proyectos</a></li>
+	{% endif %}
 {% endblock %}
 {% block itemMenuUs %}
 	<li class="menusubtn">Bienvenido/a, {{usuario.first_name|capfirst}}&nbsp&nbsp</li>

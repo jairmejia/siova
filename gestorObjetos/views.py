@@ -17,6 +17,7 @@ from django.contrib import messages
 from gestorObjetos.models import Repositorio, Objeto, Autor, RutaCategoria, EspecificacionLOM, PalabraClave
 from gestorObjetos.forms import EspecificacionForm, cEspecificacionForm, ObjetosForm, cObjetosForm
 from gestorProyectos.models import Proyecto
+from gestorProyectos.forms import Proyecto
 import datetime
 from filetransfers.api import serve_file
 import siova.lib.Opciones as opc

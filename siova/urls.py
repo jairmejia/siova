@@ -32,5 +32,6 @@ urlpatterns = patterns('',
     url(r'^editObjeto/objetos/(?P<id>.+)$', 'gestorObjetos.views.downloadEdit'),
     url(r'^admin/gestorObjetos/objeto/(?P<id>.+)/objetos/.+$', 'gestorObjetos.views.download'),
     url(r'^admin/logout/$', 'gestorObjetos.views.redirige'),
-    url(r'^proyecto/$','gestorProyectos.views.Proyecto')
+    url(r'^proyecto/$','gestorProyectos.views.Proyecto'),
+    url(r'^revisor/$','gestorProyectos.views.Proyecto'),
 )

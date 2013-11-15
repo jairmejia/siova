@@ -19,6 +19,5 @@ class ProyectoForm(ModelForm):
 			'descripcion': Textarea(attrs={'cols': 40, 'rows': 5}),
 			'fase': Textarea(attrs={'cols': 40, 'rows': 3}),
 			'estandar_Competencia': Textarea(attrs={'cols': 40, 'rows': 5}),
-			'programa': Textarea(attrs={'cols': 20, 'rows': 3}),
 		}
 	fecha = forms.DateField(initial=datetime.date.today, label="Fecha", help_text='Fecha en que el proyecto fue creado')

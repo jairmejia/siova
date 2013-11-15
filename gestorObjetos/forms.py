@@ -55,8 +55,8 @@ class ObjetosForm(ModelForm):
 		self.fields['repositorio'].queryset = Repositorio.objects.filter(grupos=gruposu)
 	class Meta:
 		model=Objeto
-		#Se excluye los campos con dependencias a los models EspecificacioLOM, Autores y Usuario Creador
-		exclude = ('espec_lom','autores','creador')
+		#Se excluye los campos con dependencias a los models EspecificacioLOM, Autores y Usuario Creador, proyecto
+		exclude = ('espec_lom','autores','creador','proyecto')
 	#Se modifica el comportamiento de estos campos
 	palabras_claves = forms.CharField(max_length=500, required=False, label="Palabras", help_text='Palabras Asociadas al Objeto')
 	archivo = forms.FileField(widget=AdminFileWidget, label="Archivo", help_text='Archivo del Objeto')

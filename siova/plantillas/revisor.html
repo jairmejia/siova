@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
-{% block titulo %} Siova: Catalogador {% endblock %}
+{% block titulo %} Siova: Revisor {% endblock %}
 {% block itemMenu %}
-	{% if usuario.profile.rol = 'rcat' %}
-		<li><a class="menusbtn" href="/proyecto">Proyectos</a></li>
+	{% if usuario.profile.rol = 'rrev' %}
+		<li><a class="menusbtn" href="/revisor">Proyectos</a></li>
 	{% endif %}
 {% endblock %}
 {% block itemMenuUs %}
@@ -10,7 +10,7 @@
     <li><a class="menusubtn" href="/cerrar">Salir</a></li> {% endblock %}
 {% block itemNav %}<li><a href="/">Inicio</a></li>{% endblock %}
 {% block contenidoIzq %}
-    <div class="titulos" id="titulo">Mis Proyectos</div>
+    <div class="titulos" id="titulo">Mis  Proyectos</div>
     <div id="contenidosm1">
         <ul id="rcontenidos">
             <br>
@@ -24,7 +24,7 @@
     </div>
 {% endblock %}
 {% block contenidoDer %}
-	<div class="titulos" id="titulo">Crear Proyectos</div>
+    <div class="titulos" id="titulo">Revisar Proyectos</div>
         {% if messages %}
             <ul class="messages">e
                 {% for message in messages %}
@@ -40,10 +40,7 @@
                 <p class="errores">{{err}}</p>
             {% endfor %}
         {% endif%}
-	<form id="formulario" method="post" enctype="multipart/form-data" action="">{% csrf_token %}
-        {{ formEsp.as_p }}
-        {{ formObj.as_p }}
-        {{ formPro.as_p }}
+    <form id="formulario" method="post" enctype="multipart/form-data" action="">{% csrf_token %}
         Autores:
         <div id = "camposAutores">
             <p>
@@ -63,6 +60,6 @@
             <input id="autores1" name="autores1" type="hidden"/>
         </div>
         <span class="helptext">Personas autoras del proyecto</span>
-		<p class="btnInferior"><input class="descarga" id="crearPro" type="submit" value="Crear Proyecto"/></p>
-	</form>
+        <p class="btnInferior"><input class="descarga" id="crearPro" type="submit" value="Revisar Proyecto"/></p>
+    </form>
 {% endblock %}

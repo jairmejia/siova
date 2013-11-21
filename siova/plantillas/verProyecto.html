@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block titulo %} siova: {{proyecto|capfirst}} {% endblock %}
+{% block itemMenu %}
+{% if usuario.profile.rol == 'rcat' %}
+	<li><a class="menusbtn" href="/proyecto">Proyectos</a></li>
+	{% if objeto.creador.pk == usuario.pk %}
+		<li><a class="menusbtn" id="editarPro" href="/editProyecto/{{objeto.pk}}">Editar Proyecto</a></li>
+	{% endif %}
+{% endif %}
+{% endblock %}
+{% block itemMenuUs %}
+	<li class="menusubtn">Bienvenido/a, {{usuario.first_name|capfirst}}&nbsp&nbsp</li>
+	{% if usuario %}
+		<li><a class="menusubtn" href="/cerrar">Salir</a></li>
+	{% else %}
+		<li><a class="menusubtn" href="/ingresar">Ingresar</a></li>
+	{% endif %}
+{% endblock %}
+{% block itemNav %}<li><a href="/">Inicio</a></li>> <li><a href="/proyecto">Proyectos</a></li>{% endblock %}
+{% block contenidoIzq %}
+	<div class="titulo_item" id="tit_obj">
+		<p>{{objeto|capfirst}}</p>
+		<div id="descargar"><a class="descarga" href="/descarga/{{objeto.pk}}" target="_blank">Descargar</a></div>
+	</div>
+{% endblock %}
+{% block contenidoDer %}
+	<dl>
+		<dt>Título</dt>
+		<dd>{{espec.lc1_titulo}}</dd>
+		<dt>Idioma</dt>
+		<dd>{{ idioma }}
+		</dd>
+		<dt>Descripción</dt>
+		<dd>{{espec.lc1_descripcion}}</dd>
+		<dt>Palabras Claves</dt>
+			<dd>
+			{% for k in keywords %}
+				{{k.palabra_clave}} 
+			{% empty %}
+			Vacío
+			{% endfor %}
+			</dd>
+		<dt>cobertura</dt>
+		<dd>{{espec.lc1_cobertura}}</dd>
+		<dt>Nivel de Agregación</dt>
+		<dd>{{ niv_agr }}</dd>
+		<dt>Versión</dt>
+		<dd>{{espec.lc2_version}}</dd>
+		<dt>Autores</dt>
+			<dd>
+			{% for a in autores %}
+				{{a.nombres|capfirst}} {{a.apellidos|capfirst}} - {{a.rol|capfirst}} <br>
+			{% empty %}
+			Vacío
+			{% endfor %}
+			</dd>
+		<dt>Fecha</dt>
+		<dd>{{espec.lc2_fecha}}</dd>
+		<dt>Formato</dt>
+		<dd>{{formato}}</dd>
+		<dt>Tamaño</dt>
+		<dd>{{objeto.archivo.size|filesizeformat}}</dd>
+		<dt>Requerimientos</dt>
+		<dd>{{espec.lc3_requerimientos}}</dd>
+		<dt>Instrucciones</dt>
+		<dd>{{espec.lc3_instrucciones}}</dd>
+		<dt>Tipo de interactividad</dt>
+		<dd>{{tipo_i}}</dd>
+		<dt>Nivel de Interactividad</dt>
+		<dd>{{nivel_i}}</dd>
+		<dt>Población</dt>
+		<dd>{{espec.lc4_poblacion}}</dd>
+		<dt>Contexto</dt>
+		<dd>{{context}}</dd>
+		<dt>Derechos de Autor</dt>
+		<dd>{{espec.lc5_derechos}}</dd>
+		<dt>Uso Educativo</dt>
+		<dd>{{espec.lc6_uso_educativo}}</dd>
+		<dt>Categoría</dt>
+		<dd>{{objeto.ruta_categoria}}</dd>
+		<dt>Proyecto</dt>
+		<dd>{{objeto.proyecto}}</dd>
+		<dt>Descripcion</dt>
+		<dd>{{objeto.proyecto.descripcion}}</dd>
+		<dt>Fecha</dt>
+		<dd>{{objeto.proyecto.fecha}}</dd>
+		<dt>Fase</dt>
+		<dd>{{objeto.proyecto.fase}}</dd>
+		<dt>Estand_Competencia</dt>
+		<dd>{{objeto.proyecto.estandar_Competencia}}</dd>
+		<dt>Programa</dt>
+		<dd>{{objeto.proyecto.programa}}</dd>
+	</dl>
+{% endblock %}

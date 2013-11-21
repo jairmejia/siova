@@ -89,6 +89,7 @@ function arranque(name) {
     //$("#rcontenidos").accordion({ active: 2 });
     $("#id_c_fecha" ).datepicker({dateFormat:'dd/mm/yy'});
     $("#id_lc2_fecha" ).datepicker({dateFormat:'dd/mm/yy'});
+    $("#id_fecha" ).datepicker({dateFormat:'dd/mm/yy'});
 
 
     $('#busca').click(function(e) {

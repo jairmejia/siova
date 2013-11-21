@@ -74,7 +74,7 @@ class cObjetosForm(ModelForm):
 	class Meta:
 		model=Objeto
 		# Se exluyen los siguientes campos que forman dependencias con sus respectivos modelos
-		exclude =('espec_lom','autores','creador', 'palabras_claves')
+		exclude =('espec_lom','autores','creador', 'palabras_claves','proyecto')
 	#Se crean los campos específicos para mostrar un comportamiento distinto al esperado.
 	palabras_claves = forms.CharField(max_length=500, required=False, label="Palabras", help_text='Palabras Asociadas al Objeto')
 	archivo= forms.FileField(widget=AdminFileWidget, label="Archivo", help_text='Archivo del Objeto')

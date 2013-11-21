@@ -10,7 +10,7 @@
     <li><a class="menusubtn" href="/cerrar">Salir</a></li> {% endblock %}
 {% block itemNav %}<li><a href="/">Inicio</a></li>{% endblock %}
 {% block contenidoIzq %}
-    <div class="titulos" id="titulo">Mis  Proyectos</div>
+    <div class="titulos" id="titulo">Mis Proyectos</div>
     <div id="contenidosm1">
         <ul id="rcontenidos">
             <br>
@@ -40,26 +40,77 @@
                 <p class="errores">{{err}}</p>
             {% endfor %}
         {% endif%}
+    <div class="submenu" id="submenu1">Repositorios</div>
+        <div id="contenidosm1">
+        <ul id="rcontenidos">
+            <br>
+            {% for rep in repos %}
+                <li>{{rep.nombre|title}}</li>
+                <ul id="ocontenidos">
+                    {% for obj in objetos %}
+                        {% if obj.repositorio == rep %}
+                            <li><a href="/objeto/{{obj.id}}">{{obj}}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+                <hr><br>
+            {% empty %}
+                <li>No hay repositorios registrados aún.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div id="contenidosm2">
+        <ul id="rcontenidos">
+            {% for cn1 in catn1 %}
+                <li><a href="/categoria/{{cn1.id}}">
+                    {{cn1.nombre_ruta}}
+                    <!--{% if cn1.objeto_set.count != 0 %}
+                        ({{cn1.objeto_set.count}})
+                    {% endif %}-->
+                </a></li>
+                <ul id="ocontenidos">
+                    {% for cn2 in catn2 %}
+                        {% if cn2.cat_padre == cn1 %}
+                            <li><a href="/categoria/{{cn2.id}}">
+                                {{cn2.nombre_ruta}}
+                                <!--{% if cn2.objeto_set.count != 0 %}
+                                    ({{cn2.objeto_set.count}})
+                                {% endif %}-->
+                            </a></li>
+                            <ul id="ocontenidos">
+                                {% for cn3 in catn3 %}
+                                    {% if cn3.cat_padre == cn2 %}
+                                        <li><a href="/categoria/{{cn3.id}}">
+                                            {{cn3.nombre_ruta}}
+                                            <!--{% if cn3.objeto_set.count != 0 %}
+                                                ({{cn3.objeto_set.count}})
+                                            {% endif %}-->
+                                        </a></li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </ul>
+    </div>  
     <form id="formulario" method="post" enctype="multipart/form-data" action="">{% csrf_token %}
-        Autores:
-        <div id = "camposAutores">
-            <p>
-                Nombres<br><input id="au_name" type="text" size="10"/>
-            </p>
-            <p>
-               Apellidos<br><input id="au_last" type="text" size="10"/>
-            </p>
-            <p>
-                Rol *<br><input id="au_rol" value="Autor" type="text" size="8"/>
-            </p>
-            <p>
-                <div class="btn_peq" id="btn_agr">+</div>
-            </p>
-            <ul id="autores"></ul>
-            <p id="error"></p>
-            <input id="autores1" name="autores1" type="hidden"/>
-        </div>
-        <span class="helptext">Personas autoras del proyecto</span>
+        Proyectos por revisar:
         <p class="btnInferior"><input class="descarga" id="crearPro" type="submit" value="Revisar Proyecto"/></p>
     </form>
 {% endblock %}
+<!---{% for rep in repos %}
+                <li>{{rep.nombre|title}}</li>
+                <ul id="ocontenidos">
+                    {% for p in proyecto %}
+                        {% if p.repositorio == rep %}
+                            <li><a href="/revisor/{{p.id}}">{{p}}</a></li>
+                            <hr><br>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+                <hr><br>
+            {% empty %}
+                <li>No hay proyectos registrados aún.</li>
+            {% endfor %}

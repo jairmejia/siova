@@ -38,6 +38,7 @@
 	<form id="formulario" method="post" enctype="multipart/form-data" action="">{% csrf_token %}	
 		{{ formEsp.as_p }}
         {{ formObj.as_p }}
+        {{ formPro.as_p }}
         <div id = "camposAutores">
             <p>
                 Nombres<br><input id="au_name" type="text" size="10"/>

@@ -32,12 +32,22 @@
 	<div id="contenidosm1">
 		<ul id="rcontenidos">
 			<br>
+			{{obj.proyecto}}
 			{% for rep in repos %}
 				<li>{{rep.nombre|title}}</li>
 				<ul id="ocontenidos">
 					{% for obj in objetos %}
 						{% if obj.repositorio == rep %}
-							<li><a href="/objeto/{{obj.id}}">{{obj}}</a></li>
+							{% if obj.proyecto %}
+								<li><a href="/proyecto/{{obj.id}}">{{obj}}</a>
+								{% if obj.proyecto.fase == "1" %}
+									<a href="/asociarProyecto/{{obj.id}}"><font color="red"> {{obj.proyecto.fase}}</font></a>
+								{% elif obj.proyecto.fase == "2"%}
+									<a href="/validar/{{obj.id}}"><font color="red"> {{obj.proyecto.fase}}</font></a>
+								{% endif %} 
+							{% else %}
+								<li><a href="/objeto/{{obj.id}}">{{obj}}</a></li>
+							{% endif %}
 						{% endif %}
 					{% endfor %}
 				</ul>

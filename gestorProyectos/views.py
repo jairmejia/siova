@@ -1,6 +1,6 @@
 # Create your views here.
 #encoding:utf-8
-from gestorProyectos.models import Proyecto, Facultad, Programa, Estandar_competencia
+from gestorProyectos.models import Proyecto, Facultad, Programa
 from django.shortcuts import render_to_response
 from gestorObjetos.models import Repositorio, Objeto, Autor, RutaCategoria, EspecificacionLOM, PalabraClave
 from gestorProyectos.forms import ProyectoForm

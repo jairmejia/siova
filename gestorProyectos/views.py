@@ -58,11 +58,14 @@ def Proyecto(request):
 							esp=formularioEsp.save()#se guarda la especificaciónLOM primero
 							pc = formularioObj.cleaned_data['palabras_claves']#se toman las palabras claves digitadas
 							re = formularioObj.cleaned_data['repositorio']#se toma el repositorio
-							pro=formularioPro.save()#se guarda el proyecto
+							pro=formularioPro.save(commit=False)#se guarda una instancia temporal
+							ti = formularioEsp.cleaned_data['lc1_titulo']
+							pro.titulo = ti #se asocia el proyecto con su titulo 
+							pro.save()
 							f=formularioObj.save(commit=False)#se guarda un instancia temporañ
 							f.espec_lom = esp # se asocia el objeto con su especificaciónLOM
 							f.creador=request.user # Se asocia el objeto con el usuario que lo crea
-							f.repositorio=re # se asocia el objeto con su repositorio
+							f.repositorio=re # se asoicia el objeto con su repositorio
 							f.proyecto=pro #se asocia el proyecto con el usuario que lo crea
 							f.save() # se guarda el objeto en la base de datos.	
 							if ',' in pc: #si hay comas en las palabras claves
@@ -208,7 +211,10 @@ def editProyecto(request,id_objeto):
 						formularioEsp.save()
 						pc = formularioObj.cleaned_data['palabras_claves']#se toman las palabras claves digitadas
 						re = formularioObj.cleaned_data['repositorio']#se toma el repositorio
-						pro = formularioPro.save()
+						pro=formularioPro.save(commit=False)#se guarda una instancia temporal
+						ti = formularioEsp.cleaned_data['lc1_titulo']
+						pro.titulo = ti #se asocia el proyecto con su titulo 
+						pro.save()
 						f=formularioObj.save(commit=False)#se guarda un instancia temporal
 						lpc=[x.strip() for x in pc.split(' ')] # se utilizan las palabras claves como una lista de palabras separadas sin espacios
 						for l in lpc:
@@ -236,7 +242,7 @@ def editProyecto(request,id_objeto):
 						f.proyecto=pro
 						f.save()
 						#messages.add_message(request, messages.SUCCESS, 'Cambios Actualizados Exitosamente')# no funciona al redireccionar
-						return HttpResponseRedirect('/Proyecto/'+str(obj.pk))
+						return HttpResponseRedirect('/proyecto/'+str(obj.pk))
 					else:
 						errores=True
 			else:

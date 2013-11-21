@@ -5,7 +5,7 @@ import datetime
 from django.contrib.admin.widgets import AdminFileWidget
 #from django.forms.widgets import ClearableFileInput
 from gestorObjetos.models import EspecificacionLOM, Objeto, Repositorio, PalabraClave
-from gestorProyectos.models import Proyecto, Programa, Facultad, Estandar_competencia
+from gestorProyectos.models import Proyecto, Programa, Facultad
 import siova.lib.Opciones as opc
 """
 Formulario basado en el modelo Proyecto

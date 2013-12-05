@@ -77,6 +77,7 @@ class Parametro(models.Model):
 	Modelo que representa los parámetros de validación pedagógica
 	"""
 	nombre = models.CharField(help_text="Nombre del parámetro de validación", verbose_name="Parámetro de Validación", max_length=80)
+	descripcion = models.TextField(help_text="Descripción del parámetro de validación", verbose_name = 'Descripción')
 	tipo = models.CharField(help_text="Tipo parámetro de validación", verbose_name="Asociados a", max_length=4, choices=opc.get_tipo_p(), default=opc.get_tipo_p()[0][0])
 	ponderacion = models.DecimalField(help_text="Valor porcentual de ponderación del parámetro", verbose_name="Ponderación Porcentual", max_digits=4, decimal_places=2)
 	class Meta:
@@ -92,10 +93,12 @@ class Proyecto(models.Model):
 	"""Se incluye el campo título pero se debe llenar con la misma información el campo título de la especificación lom del objeto asociado con este proyecto"""
 	titulo = models.CharField(max_length=200, unique=True, null=False)
 	fecha = models.DateTimeField(help_text='Fecha en que el Proyecto es aprobado', verbose_name="Fecha de aprobación")
-	fase = models.CharField(help_text="Movimiento de fase auotmático", max_length=2, choices=opc.get_fase(), default=opc.get_fase()[0][0])
+	fase = models.CharField(help_text="Movimiento de fase automático", max_length=2, choices=opc.get_fase(), default=opc.get_fase()[0][0])
 	programa = models.ForeignKey(Programa, help_text='Programa académico al que pertenece el proyecto', verbose_name='Programa')
 	indicadores = models.ManyToManyField(Indicador, blank=True, null=True, help_text="Relacione el/los Indicador (es) de comptencia", verbose_name= 'Indicador de Competencia')
 	parametros = models.ManyToManyField(Parametro, through="Validacion", blank=True, null=True)
+	calificacion = models.CharField(help_text="Calificación final del proyecto", max_length=1, choices=opc.get_calif(), default=opc.get_calif()[0][0])
+	nota = models.DecimalField(help_text="Nota numérica de la validación del proyecto", verbose_name="Nota Porcentual", max_digits=4, decimal_places=2)
 	def __unicode__(self):
 		return self.titulo
 
@@ -107,10 +110,11 @@ class Validacion(models.Model):
 	proyecto = models.ForeignKey(Proyecto)
 	parametro = models.ForeignKey(Parametro)
 	fecha = models.DateField(auto_now_add=True)
-	valoracion = models.DecimalField(max_digits=4, decimal_places=2, choices=opc.get_valoracion(), default=opc.get_valoracion()[0][0])
-	Observaciones =  models.TextField()
+	valoracion = models.CharField(verbose_name = 'Valoración', max_length=4, choices=opc.get_valoracion(), default=opc.get_valoracion()[0][0])
+	#valoracion = models.DecimalField(verbose_name = 'Valoración', max_digits=4, decimal_places=2, choices=opc.get_valoracion(), default=opc.get_valoracion()[0][0])
+	observaciones =  models.TextField(blank=True, help_text="Opcional", verbose_name = 'Observaciones')
 	class Meta:
 		verbose_name = "Validación"
 		verbose_name_plural= "Validaciones"
 	def __unicode__(self):
-		return '(%s) %s = %s (%s)' % (self.proyecto.titulo, self.parametro.nombre, self.get_valoracion_display(), self.valoracion)
+		return self.parametro.nombre

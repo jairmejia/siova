@@ -1,6 +1,5 @@
 #encoding:utf-8
 from decimal import Decimal
-
 """
 Funciones para el manejo de las opciones
 """
@@ -22,7 +21,7 @@ def get_idiomas():
 		(ENG, 'Inglés'),
 		(FRA, 'Francés'),
 		(ITA, 'Italiano'),
-		(JAP, 'Japonés'),
+		(JAP, 'japonés'),
 		(POR, 'Portugués'),
 		(RUS, 'Ruso'),
 		(SUI, 'Suizo'),
@@ -197,20 +196,52 @@ def get_tipo_p():
 		(ACONT, 'Contenido en Relación con los estándares'),
 		(AENF, 'Enfoque Cognitivo'),
 		(AEVA, 'Evaluación'),
-		(AINT, 'Intercomunicacioón Estudiante-Material'),
+		(AINT, 'Intercomunicación Estudiante-Material'),
 		(APOS, 'Posibilidades metodológicas'),
 	)
 	return TIPO_P_CHOICES
 
 def get_valoracion():
-	VTOT = Decimal('10.0')
-	VMED = Decimal('7.5')
-	VESC = Decimal('5.0')
-	VNOC = Decimal('2.5')
+	VNUL = '0.0'
+	VTOT = '10.0'
+	VMED = '7.0'
+	VESC = '5.0'
+	VNOC = '2.5'
 	VALORACION_CHOICES = (
+		(VNUL, 'Sin Calificar'),
 		(VTOT, 'Totalmente'),
 		(VMED, 'Medianamente'),
 		(VESC, 'Escasamente'),
 		(VNOC, 'No Cumple'),
 	)
 	return VALORACION_CHOICES
+
+def get_valoracion_decimal():
+	VNUL = Decimal('0.0')
+	VTOT = Decimal('10.0')
+	VMED = Decimal('7.0')
+	VESC = Decimal('5.0')
+	VNOC = Decimal('2.5')
+	VALORACION_CHOICES = (
+		(VNUL, 'Sin Calificar'),
+		(VTOT, 'Totalmente'),
+		(VMED, 'Medianamente'),
+		(VESC, 'Escasamente'),
+		(VNOC, 'No Cumple'),
+	)
+	return VALORACION_CHOICES
+
+def get_calif():
+	NUL = 's'
+	APR = 'a'
+	REP = 'r'
+	CALIFICACION_CHOICES = (
+		(NUL, 'Sin calificar'),
+		(APR, 'Clasificado'),
+		(REP, 'No Clasificado'),
+	)
+	return CALIFICACION_CHOICES
+
+def get_umbral_calificacion():
+	UMBRAL=Decimal('7.0')
+	return UMBRAL

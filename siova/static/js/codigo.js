@@ -1,5 +1,5 @@
 $(document).on("ready", arranque);
-
+var errores_s="";
 function arranque(name) {
     if($("#autores1").val()){
         var string_autores=$("#autores1").val();//En la plantilla el campo autores1 tiene el array de los autores del objeto a modificar
@@ -91,7 +91,7 @@ function arranque(name) {
     $("#id_lc2_fecha" ).datepicker({dateFormat:'dd/mm/yy'});
     $("#id_fecha" ).datepicker({dateFormat:'dd/mm/yy'});
 
-
+    /*************Interacciones con AJAX*****************/
     $('#busca').click(function(e) {
         e.preventDefault();
         qu = $('#q').val();
@@ -104,7 +104,12 @@ function arranque(name) {
                     obj=json.slice(0,(json.length/2));
                     esp=json.slice(json.length/2,json.length);
                     $.each(obj, function(key,val){
-                        $("#results1").append("<li class='resultados'><a href='/objeto/"+val.pk+"'>"+esp[key]['fields']['lc1_titulo']+"</a></li>");
+                        if(obj[key]['fields']['proyecto']!=null){
+                            $("#results1").append("<li class='resultados'><a href='/proyecto/"+val.pk+"'>"+esp[key]['fields']['lc1_titulo']+"</a></li>");
+                        }
+                        else{
+                            $("#results1").append("<li class='resultados'><a href='/objeto/"+val.pk+"'>"+esp[key]['fields']['lc1_titulo']+"</a></li>");
+                        }
                     });
                 }else{
                     $("#results1").html('<h3>La búsqueda no arrojó resultados</h3>');
@@ -138,7 +143,12 @@ function arranque(name) {
                     obj=json.slice(0,(json.length/2));
                     esp=json.slice(json.length/2,json.length);
                     $.each(obj, function(key,val){
-                        $("#results2").append("<a href='/objeto/"+val.pk+"'><li class='resultados'>"+esp[key]['fields']['lc1_titulo']+"</li></a>");
+                        if(obj[key]['fields']['proyecto']!=null){
+                            $("#results1").append("<li class='resultados'><a href='/proyecto/"+val.pk+"'>"+esp[key]['fields']['lc1_titulo']+"</a></li>");
+                        }
+                        else{
+                            $("#results1").append("<li class='resultados'><a href='/objeto/"+val.pk+"'>"+esp[key]['fields']['lc1_titulo']+"</a></li>");
+                        }
                     });
                 }else{
                     $("#results2").html('<h3>La búsqueda no arrojó resultados</h3>');
@@ -148,6 +158,34 @@ function arranque(name) {
             $("#results2").empty();
         }
     });
+    $('.proyectos_lista').click(function(e) {
+        id=e.target.id;
+        s=id.replace(/p_/g,'');
+        $(".proyectos_lista").css({"background-color":"","color":"#055a9b"});
+        $(this).css({"background-color":"#ccc","color":"black"});
+
+        $.getJSON("/ver_proyecto", { q:s }, function(data){
+            $("#proyectos").empty();
+            $("#pro_val").empty();
+            $("#btn_validar").html("<a href='/validar/"+s+"' class='descarga'>Validar</a>");
+            esp=data.slice(0,1);
+            prog=data.slice(1,2);
+            aut=data.slice(2,data.length);
+            $.each( aut, function( key, val ) {
+                $("#proyectos").append("<dt>Autor"+(key+1)+"</dt><dd>"+aut[key]['fields']['nombres']+" "+aut[key]['fields']['apellidos']+" - "+aut[key]['fields']['rol']+"</dd>");
+            });
+            $.each( esp, function( key, val ) {
+                $("#pro_val").html("<p>"+val['fields']['lc1_titulo']+"</p>")
+                $("#proyectos").append("<dt>Programa Académico</dt><dd>"+prog[key]['fields']['nombre']+"</dd>");
+                $("#proyectos").append("<dt>Descripción</dt><dd>"+val['fields']['lc1_descripcion']+"</dd>");
+                $("#proyectos").append("<dt>Población Objetivo</dt><dd>"+val['fields']['lc4_poblacion']+"</dd>");
+                $("#proyectos").append("<dt>Derechos de uso</dt><dd>"+val['fields']['lc5_derechos']+"</dd>");
+                $("#proyectos").append("<dt>Uso Educativo</dt><dd>"+val['fields']['lc6_uso_educativo']+"</dd>");
+            });
+        });
+    });
+
+/****************************************************/
 
     $('#btn_agr').click(function(e) {
         if($("#autores1").val()){
@@ -195,14 +233,14 @@ function arranque(name) {
                         autores_arr.splice(jQuery.inArray(s,autores_arr),1);
                         $('#autores1').val(autores_arr);
                         $("#autors"+e).remove();
-                        console.log("Archivo_autores:  (al eliminar) "+$('#autores1').val());
+                        //console.log("Archivo_autores:  (al eliminar) "+$('#autores1').val());
                     });
                 });
                 $('#au_name').val("");
                 $('#au_last').val("");
                 $('#au_rol').val("Autor");
                 $('#autores1').val(autores_arr);
-                console.log("Archivo_autores previos:  (al agregar) "+$('#autores1').val());
+                //console.log("Archivo_autores previos:  (al agregar) "+$('#autores1').val());
             }
         }else{
             $("#error").html("Debes digitar todos los campos del Autor");
@@ -249,6 +287,58 @@ function arranque(name) {
         $("#busq2").removeClass('submenu_');
         $("#busq2").addClass('submenu');
     });
+
+    /* *******Interactividad(Proyectos)******************/
+
+    $("#sec1_btn").click(function(e){
+        $("#sec1").slideToggle();
+        $("#sec2").slideUp();
+    });
+
+    $("#sec2_btn").click(function(e){
+        $("#sec1").slideUp();
+        $("#sec2").slideToggle();
+    });
+
+    $(".sec_formV_par").click(function(e){
+        //console.log("algo");
+        id=e.target.id;
+        s=id.replace(/sec_formV_par/g,'');
+        $("#sec_formV_"+s).slideToggle();
+    });
+
+    $("#aprobado_lista").click(function(e){
+        $("#sprobado_listaP").slideUp();
+        $("#rprobado_listaP").slideUp();
+        $("#aprobado_listaP").slideToggle();
+    });
+
+    $("#rprobado_lista").click(function(e){
+        $("#aprobado_listaP").slideUp();
+        $("#sprobado_listaP").slideUp();
+        $("#rprobado_listaP").slideToggle();
+    });
+
+    $("#sprobado_lista").click(function(e){
+        $("#aprobado_listaP").slideUp();
+        $("#rprobado_listaP").slideUp();
+        $("#sprobado_listaP").slideToggle();
+    });
+
+
+    /***********************Errores para el formulario de validación************/
+    if(errores_s.length>0){
+        console.log(errores_s.length);
+        var errores_arr=errores_s.split(",");
+        for(var i=0; i<errores_arr.length; i++){
+            cadenafinal=errores_arr[i].replace(/u&#39;form-/g,'').replace(/-valoracion&#39;/g,'').replace(/\[/g,'').replace(/\]/g,'');
+            num=(Number(cadenafinal)+1);
+            console.log(num);
+            $("#sec_formV_par"+num).addClass("sec_formV_par_error");
+        }
+    }
+
+    /***************************************************************/
 }
 
 function validar(ar,nam,las,rol) {

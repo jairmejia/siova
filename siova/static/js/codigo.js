@@ -18,6 +18,11 @@ function arranque(name) {
     $("#id_c_tipo_inter").prop('disabled',true);
     $("#id_c_tipo_rec").prop('disabled',true);
     $("#id_c_nivel_inter").prop('disabled',true);
+    $("#id_c_pro_fase").prop('disabled',true);
+    $("#id_c_pro_prog").prop('disabled',true);
+    $("#id_c_pro_calif").prop('disabled',true);
+    $("#id_c_pro_fecha").prop('disabled',true);
+    $("#id_c_pro_gra").prop('disabled',true);
 
     $("#v_tit").click(function(){
         if($("#v_tit").is(':checked')){
@@ -83,11 +88,52 @@ function arranque(name) {
         }
     });
 
+    $("#v_pfas").click(function(){
+        if($("#v_pfas").is(':checked')){
+            $("#id_c_pro_fase").prop('disabled',false);
+        }else{
+            $("#id_c_pro_fase").prop('disabled',true);
+        }
+    });
+
+    $("#v_ppro").click(function(){
+        if($("#v_ppro").is(':checked')){
+            $("#id_c_pro_prog").prop('disabled',false);
+        }else{
+            $("#id_c_pro_prog").prop('disabled',true);
+        }
+    });
+
+    $("#v_pcal").click(function(){
+        if($("#v_pcal").is(':checked')){
+            $("#id_c_pro_calif").prop('disabled',false);
+        }else{
+            $("#id_c_pro_calif").prop('disabled',true);
+        }
+    });
+
+    $("#v_pfec").click(function(){
+        if($("#v_pfec").is(':checked')){
+            $("#id_c_pro_fecha").prop('disabled',false);
+        }else{
+            $("#id_c_pro_fecha").prop('disabled',true);
+        }
+    });
+
+    $("#v_pgra").click(function(){
+        if($("#v_pgra").is(':checked')){
+            $("#id_c_pro_gra").prop('disabled',false);
+        }else{
+            $("#id_c_pro_gra").prop('disabled',true);
+        }
+    });
+
     // termina
 
     /* Interacciones con JQueryUI*/
     //$("#rcontenidos").accordion({ active: 2 });
     $("#id_c_fecha" ).datepicker({dateFormat:'dd/mm/yy'});
+    $("#id_c_pro_fecha" ).datepicker({dateFormat:'dd/mm/yy'});
     $("#id_lc2_fecha" ).datepicker({dateFormat:'dd/mm/yy'});
     $("#id_fecha" ).datepicker({dateFormat:'dd/mm/yy'});
 
@@ -136,18 +182,31 @@ function arranque(name) {
         if($('#v_tre:checked').val()){v_tre = $('#v_tre:checked').val();}else{v_tre = "False";}
         nin = $('#id_c_nivel_inter').val();
         if($('#v_nin:checked').val()){v_nin = $('#v_nin:checked').val();}else{v_nin = "False";}
-        if((v_tit=="True" & tit.length>0) | (v_tob=="True" & tob.length>0) | (v_idi=="True" & idi.length>0) | (v_nag=="True" & nag.length>0) | (v_fec=="True" & fec.length>0) | (v_tin=="True" & tin.length>0) | (v_tre=="True" & tre.length>0) | (v_nin=="True" & nin.length>0)) {
-            $.getJSON("/busqueda", { tit:tit, v_tit:v_tit, tob:tob, v_tob:v_tob, idi:idi, v_idi:v_idi, nag:nag, v_nag:v_nag, fec:fec, v_fec:v_fec, tin:tin, v_tin:v_tin, tre:tre, v_tre:v_tre, nin:nin, v_nin:v_nin}, function(json){
+        /*****Proyectos*****/
+        pfas = $('#id_c_pro_fase').val();
+        if($('#v_pfas:checked').val()){v_pfas = $('#v_pfas:checked').val();}else{v_pfas = "False";}
+        ppro = $('#id_c_pro_prog').val();
+        if($('#v_ppro:checked').val()){v_ppro = $('#v_ppro:checked').val();}else{v_ppro = "False";}
+        pcal = $('#id_c_pro_calif').val();
+        if($('#v_pcal:checked').val()){v_pcal = $('#v_pcal:checked').val();}else{v_pcal = "False";}
+        pfec = $('#id_c_pro_fecha').val();
+        if($('#v_pfec:checked').val()){v_pfec = $('#v_pfec:checked').val();}else{v_pfec = "False";}
+        pgra = $('#id_c_pro_gra').val();
+        if($('#v_pgra:checked').val()){v_pgra = $('#v_pgra:checked').val();}else{v_pgra = "False";}
+        /*******************/
+        if((v_tit=="True" & tit.length>0) | (v_tob=="True" & tob.length>0) | (v_idi=="True" & idi.length>0) | (v_nag=="True" & nag.length>0) | (v_fec=="True" & fec.length>0) | (v_tin=="True" & tin.length>0) | (v_tre=="True" & tre.length>0) | (v_nin=="True" & nin.length>0) | (v_pfas=="True" & pfas.length>0) | (v_ppro=="True" & ppro.length>0) | (v_pcal=="True" & pcal.length>0) | (v_pfec=="True" & pfec.length>0) | (v_pgra=="True" & pgra.length>0)) {
+            console.log(pgra);
+            $.getJSON("/busqueda", { tit:tit, v_tit:v_tit, tob:tob, v_tob:v_tob, idi:idi, v_idi:v_idi, nag:nag, v_nag:v_nag, fec:fec, v_fec:v_fec, tin:tin, v_tin:v_tin, tre:tre, v_tre:v_tre, nin:nin, v_nin:v_nin, pfas:pfas, v_pfas:v_pfas, ppro:ppro, v_ppro:v_ppro, pcal:pcal, v_pcal:v_pcal, pfec:pfec, v_pfec:v_pfec, pgra:pgra, v_pgra:v_pgra}, function(json){
                 $("#results2").empty();
                 if (json.length != 0) {
                     obj=json.slice(0,(json.length/2));
                     esp=json.slice(json.length/2,json.length);
                     $.each(obj, function(key,val){
                         if(obj[key]['fields']['proyecto']!=null){
-                            $("#results1").append("<li class='resultados'><a href='/proyecto/"+val.pk+"'>"+esp[key]['fields']['lc1_titulo']+"</a></li>");
+                            $("#results2").append("<li class='resultados'><a href='/proyecto/"+val.pk+"'>"+esp[key]['fields']['lc1_titulo']+"</a></li>");
                         }
                         else{
-                            $("#results1").append("<li class='resultados'><a href='/objeto/"+val.pk+"'>"+esp[key]['fields']['lc1_titulo']+"</a></li>");
+                            $("#results2").append("<li class='resultados'><a href='/objeto/"+val.pk+"'>"+esp[key]['fields']['lc1_titulo']+"</a></li>");
                         }
                     });
                 }else{

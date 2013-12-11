@@ -5,6 +5,7 @@ import datetime
 from django.contrib.admin.widgets import AdminFileWidget
 #from django.forms.widgets import ClearableFileInput
 from gestorObjetos.models import EspecificacionLOM, Objeto, Repositorio, PalabraClave
+from gestorProyectos.models import Programa, Grado
 import siova.lib.Opciones as opc
 """
 Formulario basado en el modelo EspecificacionLOM
@@ -41,6 +42,11 @@ class cEspecificacionForm(forms.Form):
 	c_tipo_inter = forms.CharField(max_length=3,widget=forms.Select(choices=opc.get_tipo_interactividad()))
 	c_tipo_rec = forms.CharField(max_length=50,widget=forms.Select(choices=opc.get_tipo_recurso()))
 	c_nivel_inter = forms.CharField(max_length=3,widget=forms.Select(choices=opc.get_nivel_interactividad()))
+	c_pro_fase = forms.CharField(max_length=2,widget=forms.Select(choices=opc.get_fase()))
+	c_pro_prog = forms.ModelChoiceField(queryset=Programa.objects.all())
+	c_pro_calif = forms.CharField(max_length=1,widget=forms.Select(choices=opc.get_calif()))
+	c_pro_fecha = forms.DateField(initial=datetime.date.today)
+	c_pro_gra = forms.ModelChoiceField(queryset=Grado.objects.all())
 
 
 """

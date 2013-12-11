@@ -110,32 +110,32 @@
 			Buscar por
 			<p>
 				<input type="checkbox" id="v_tit" name="v_tit" value="True">
-				<label for="id_c_titulo">Título:</label>
+				<label for="v_tit">Título:</label>
 		        {{ form.c_titulo }}
 		    </p>
 		    <p>
 		    	<input type="checkbox" id="v_tob" name="v_tob" value="True">
-				<label for="id_c_tipo_obj">Tipo de Objeto:</label>
+				<label for="v_tob">Tipo de Objeto:</label>
 		        {{ form.c_tipo_obj }}
 		    </p>
 		    <p>
 		    	<input type="checkbox" id="v_idi" name="v_idi" value="True">
-				<label for="id_c_idioma">Idioma:</label>
+				<label for="v_idi">Idioma:</label>
 		        {{ form.c_idioma }}
 		    </p>
 		    <p>
 		    	<input type="checkbox" id="v_nag" name="v_nag" value="True">
-				<label for="id_c_nivel_agregacion">Nivel de agregación:</label>
+				<label for="v_nag">Nivel de agregación:</label>
 		        {{ form.c_nivel_agregacion }}
 		    </p>
 		    <p>
 		    	<input type="checkbox" id="v_fec" name="v_fec" value="True">
-		        <label for="id_c_fecha">Fecha de publicación:</label>
+		        <label for="v_fec">Fecha de publicación:</label>
 		        {{ form.c_fecha }}
 		    </p>
 		    <p>
 		    	<input type="checkbox" id="v_tin" name="v_tin" value="True">
-		        <label for="id_c_tipo_inter">Tipo de Interactividad:</label>
+		        <label for="v_tin">Tipo de Interactividad:</label>
 		        {{ form.c_tipo_inter }}
 		    </p>
 		    <p>
@@ -145,9 +145,37 @@
 		    </p>
 		    <p>
 		    	<input type="checkbox" id="v_nin" name="v_nin" value="True">
-		        <label for="id_c_nivel_inter">Nivel de Interactividad:</label>
+		        <label for="v_nin">Nivel de Interactividad:</label>
 		        {{ form.c_nivel_inter }}
 			</p>
+			{% if usuario.profile.rol = 'rcat' or usuario.profile.rol = 'rrev'%}
+				Asociados al proyecto
+				<p>
+			    	<input type="checkbox" id="v_pfas" name="v_pfas" value="True">
+			        <label for="v_pfas">Fase:</label>
+			        {{ form.c_pro_fase }}
+				</p>
+				<p>
+			    	<input type="checkbox" id="v_ppro" name="v_ppro" value="True">
+			        <label for="v_ppro">Programa Académico:</label>
+			        {{ form.c_pro_prog }}
+				</p>
+				<p>
+			    	<input type="checkbox" id="v_pcal" name="v_pcal" value="True">
+			        <label for="v_pcal">Calificación:</label>
+			        {{ form.c_pro_calif }}
+				</p>
+				<p>
+			    	<input type="checkbox" id="v_pfec" name="v_pfec" value="True">
+			        <label for="v_pfec">Fecha Aprobación:</label>
+			        {{ form.c_pro_fecha }}
+				</p>
+				<p>
+			    	<input type="checkbox" id="v_pgra" name="v_pgra" value="True">
+			        <label for="v_pgra">Grado de Escolaridad:</label>
+			        {{ form.c_pro_gra }}
+				</p>
+			{% endif %}
 
 			<p><input class="menusbtn" id="busqueda" type="submit" value="Busqueda"/></p>
 		    <div id="resultado">

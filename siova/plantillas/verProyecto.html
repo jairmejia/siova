@@ -7,6 +7,12 @@
 		<li><a class="menusbtn" id="editarPro" href="/editProyecto/{{objeto.pk}}">Editar Proyecto</a></li>
 	{% endif %}
 {% endif %}
+{% if usuario.profile.rol == 'rrev' %}
+	<li><a class="menusbtn" href="/revisor">Proyectos</a></li>
+	{% if objeto.proyecto.fase == 'f2' %}
+		<li><a class="menusbtn" id="validarPro" href="/validar/{{objeto.pk}}">Validar Proyecto</a></li>
+	{% endif %}
+{% endif %}
 {% endblock %}
 {% block itemMenuUs %}
 	<li class="menusubtn">Bienvenido/a, {{usuario.first_name|capfirst}}&nbsp&nbsp</li>
@@ -16,7 +22,7 @@
 		<li><a class="menusubtn" href="/ingresar">Ingresar</a></li>
 	{% endif %}
 {% endblock %}
-{% block itemNav %}<li><a href="/">Inicio</a></li>> <li><a href="/proyecto">Proyectos</a></li>{% endblock %}
+{% block itemNav %}<li><a href="/">Inicio</a></li>{% endblock %}
 {% block contenidoIzq %}
 	<div class="titulo_item" id="tit_obj">
 		<p>{{objeto|capfirst}}</p>

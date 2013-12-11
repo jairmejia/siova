@@ -39,11 +39,11 @@
 					{% for obj in objetos %}
 						{% if obj.repositorio == rep %}
 							{% if obj.proyecto %}
-								<li><a href="/proyecto/{{obj.id}}">{{obj}}</a>
-								{% if obj.proyecto.fase == "1" %}
-									<a href="/asociarProyecto/{{obj.id}}"><font color="red"> {{obj.proyecto.fase}}</font></a>
-								{% elif obj.proyecto.fase == "2"%}
-									<a href="/validar/{{obj.id}}"><font color="red"> {{obj.proyecto.fase}}</font></a>
+								<li><a href="/proyecto/{{obj.id}}">{{obj}}--</a>
+								{% if obj.proyecto.fase == "f1" %}
+									<a href="/asociarProyecto/{{obj.id}}"><font color="red">{{obj.proyecto.fase}}</font></a>
+								{% elif obj.proyecto.fase == "f2"%}
+									<a href="/validar/{{obj.id}}"><font color="red">{{obj.proyecto.fase}}</font></a>
 								{% endif %} 
 							{% else %}
 								<li><a href="/objeto/{{obj.id}}">{{obj}}</a></li>

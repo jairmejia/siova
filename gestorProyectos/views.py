@@ -1,6 +1,6 @@
 # Create your views here.
 #encoding:utf-8
-from gestorProyectos.models import Proyecto, Facultad, Programa
+from gestorProyectos.models import Proyecto, Facultad, Programa, Factor_competencias, Indicador, Enunciado
 from django.shortcuts import render_to_response
 from gestorObjetos.models import Repositorio, Objeto, Autor, RutaCategoria, EspecificacionLOM, PalabraClave
 from gestorProyectos.forms import ProyectoForm
@@ -254,73 +254,87 @@ def editProyecto(request,id_objeto):
 			return HttpResponseRedirect('/')	
 	else:
 		return HttpResponseRedirect('/')
-def asociarProyecto(request,id_objeto):
-	if request.user.profile.rol == 'rcat':
-		proyectoObj= Objeto.objects.filter(creador=request.user.id).filter(proyecto__isnull=False)		
-		gruposu = request.user.groups.all()
-		errores = False
-		error1 = False
-		l_errores=[]
-		if request.method == 'POST':
-			if not request.POST.get('autores1'):
-				l_errores.append('No incluyó autores al objeto.')
-				error1=True
-			if not request.POST.get('palabras_claves'):
-				l_errores.append('No incluyó palabras claves al objeto.')
-				error1=True
-			if not request.POST.get('repositorio'):
-				l_errores.append('No seleccionó repositorio. Si no hay repositorios asociados, consulte a un administrador del sistema para agregar alguno.')
-				error1=True
-			l_autores = request.POST.getlist('autores1')
-			formularioEsp = EspecificacionForm(request.POST)
-			formularioPro = ProyectoForm(request.POST)
-			formularioObj = ObjetosForm(gruposu, request.POST, request.FILES)
-			if not error1:
-				if formularioEsp.is_valid():
-					if formularioObj.is_valid():#si el válido el objeto
-						if formularioPro.is_valid():#si el válido el proyecto
-							esp=formularioEsp.save()#se guarda la especificaciónLOM primero
-							pc = formularioObj.cleaned_data['palabras_claves']#se toman las palabras claves digitadas
-							re = formularioObj.cleaned_data['repositorio']#se toma el repositorio
-							pro=formularioPro.save()#se guarda el proyecto
-							f=formularioObj.save(commit=False)#se guarda un instancia temporañ
-							f.espec_lom = esp # se asocia el objeto con su especificaciónLOM
-							f.creador=request.user # Se asocia el objeto con el usuario que lo crea
-							f.repositorio=re # se asocia el objeto con su repositorio
-							f.proyecto=pro #se asocia el proyecto con el usuario que lo crea
-							f.save() # se guarda el objeto en la base de datos.	
-							if ',' in pc: #si hay comas en las palabras claves
-								lpc=[x.strip() for x in pc.split(',')] # se utilizan las palabras claves como una lista de palabras separadas sin comas ni espacios
-							else:
-								lpc=[x.strip() for x in pc.split(' ')] # se utilizan las palabras claves como una lista de palabras separadas sin espacios
-							for l in lpc:
-								p,b=PalabraClave.objects.get_or_create(palabra_clave=l) # Se crea una palabra clave por cada palabra en la lista
-								if not b: #Si ya existe la palabra entonces se obvia el proceso de crearla
-									p.save() #se guarda la palabra clave en la bd
-								f.palabras_claves.add(p) # se añade cada palabra clave al objeto
-							for l in l_autores: #como el objeto llega como una lista... se debe recorrer per en realidad siempre tiene un solo objeto
-								stri=l.split(',') #se divide la lista por comas que representa cada string de campos del autor
-								for st in stri: # se recorre cada autor
-									s=st.split(' ') # se divide los campos nombres, apellidos y rol en una lista
-									aut,cr=Autor.objects.get_or_create(nombres=s[0].replace('-',' '), apellidos=s[1].replace('-',' '), rol=s[2].replace('-',' '))
-									if not cr: #Si ya existe el autor entonces se obvia el proceso de crearlo
-										aut.save() #se guarda el autor en la bd
-									f.autores.add(aut) # se añade al campo manytomany con Autores.
-							messages.add_message(request, messages.SUCCESS, 'Objeto Agregado Exitosamente')
-							formularioObj=ObjetosForm(gruposu)
-							formularioEsp=EspecificacionForm()
-							formularioPro=ProyectoForm()
-						else:
-							errores=True
-					else:
-						errores = True	
-				else:
-					errores = True						
-		else:
-			formularioObj=ObjetosForm(gruposu)
-			formularioEsp=EspecificacionForm()
-			formularioPro=ProyectoForm()
 
-		return render_to_response('asociarProyecto.html', {'usuario':request.user, 'proyecto':proyectoObj, 'formObj':formularioObj, 'formPro':formularioPro, 'formEsp':formularioEsp,'errores':errores,'l_errores':l_errores}, context_instance=RequestContext(request))
+@login_required(login_url='/ingresar')
+def asociarProyecto(request,id_objeto):
+	"""
+	Vista de acceso al usuario con rol de Catalogador, de esta manera se le permitirá asociar y modificar proyectos
+	"""
+	obj = Objeto.objects.get(pk=id_objeto)#objeto que se está modificando
+	fac = Factor_competencias.objects.filter(ruta_categoria=obj.ruta_categoria)
+	lindicadores1 = []
+	lindicadores2 = []
+	lenunciado = []	
+	l_errores = []				
+	if request.user.profile.rol == 'rcat':
+		obj=Objeto.objects.get(pk=id_objeto)#objeto que se está modificando
+		pro=obj.proyecto
+		if obj.creador == request.user:
+			for f in fac:
+				if len(lenunciado) == 0:
+					lenunciado = list(Enunciado.objects.filter(factor=f))
+				else:
+					lenunciado.extend(list(Enunciado.objects.filter(factor=f)))
+				if len(lenunciado) > 0:
+					for e in lenunciado:
+						if len(lindicadores1) == 0:
+							lindicadores1 = list(Indicador.objects.filter(enunciado=e).filter(grados__nominacion='gpr'))
+						else:
+							lindicadores1.extend(list(Indicador.objects.filter(enunciado=e).filter(grados__nominacion='gpr')))
+						if len(lindicadores2) == 0:
+							lindicadores2 = list(Indicador.objects.filter(enunciado=e).filter(grados__nominacion='gcu'))
+						else:
+							lindicadores2.extend(list(Indicador.objects.filter(enunciado=e).filter(grados__nominacion='gcu')))				
+				else:
+					if len(lindicadores1) == 0:
+						lindicadores1 = list(Indicador.objects.filter(factor=f).filter(grados__nominacion='gpr'))
+					else:
+						lindicadores1.extend(list(Indicador.objects.filter(factor=f).filter(grados__nominacion='gpr')))
+					if len(lindicadores2) == 0:
+						lindicadores2 = list(Indicador.objects.filter(factor=f).filter(grados__nominacion='gcu'))
+					else:
+						lindicadores2.extend(list(Indicador.objects.filter(factor=f).filter(grados__nominacion='gcu')))
+			l_oind=pro.indicadores.all()
+			if request.method == 'POST':
+				error1 = False
+				errores = False
+				gruposu = request.user.groups.all()
+				l_indicadores = request.POST.iteritems()
+				b=False
+				c=False
+				for key, value in l_indicadores:
+					if key.find('ind_')>=0:
+						l_errores.append(value)
+						i = Indicador.objects.get(pk=value)
+						for o in l_oind:
+							if i == o:
+								b=True
+						if b == False:
+							pro.indicadores.add(i)
+						else:
+							b=False
+					else:
+						errores=True
+				l_indicadores_temp = request.POST.iteritems()
+				for o in l_oind:
+					for k, v in l_indicadores_temp:
+						cadena=v.replace('ind_','')
+						l_errores.append(cadena)
+						l_errores.append(o.pk)
+						if k.find('ind_')>=0:
+							if o.pk == cadena:
+								c=True
+						l_errores.append(c)
+					if c == False:
+						pro.indicadores.remove(o)
+					else:
+						c=False
+				l_oind=pro.indicadores.all()
+				return render_to_response('asociarProyecto.html',{'usuario':request.user,'i':i,'l_oind':l_oind,'l_errores':l_errores,'pro':pro.indicadores,'factor':fac, 'lenunciado':lenunciado,'lindicadores1':lindicadores1, 'lindicadores2':lindicadores2},context_instance=RequestContext(request))
+			else:
+				l_oind=pro.indicadores.all()
+				return render_to_response('asociarProyecto.html',{'usuario':request.user,'l_oind':l_oind,'l_errores':l_errores,'pro':pro.indicadores,'factor':fac, 'lenunciado':lenunciado,'lindicadores1':lindicadores1, 'lindicadores2':lindicadores2},context_instance=RequestContext(request))
+		else:
+			return HttpResponseRedirect('/')
 	else:
 		return HttpResponseRedirect('/')

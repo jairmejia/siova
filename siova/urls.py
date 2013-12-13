@@ -5,12 +5,6 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    
-    url(r'^proyectos','gestorProyectos.views.lista_proyectos'),
-    url(r'^facultades','gestorProyectos.views.lista_facultades'),
-    url(r'^programas','gestorProyectos.views.lista_programas'),
-    url(r'^estandares','gestorProyectos.views.lista_estandares'),
-    #url(r'^siova/', include('siova.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

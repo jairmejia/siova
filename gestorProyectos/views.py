@@ -1,4 +1,3 @@
-# Create your views here.
 #encoding:utf-8
 from gestorProyectos.models import Proyecto, Facultad, Programa, Factor_competencias, Indicador, Enunciado
 from django.shortcuts import render_to_response
@@ -10,29 +9,14 @@ from gestorObjetos.forms import EspecificacionForm, cEspecificacionForm, Objetos
 from django.contrib import messages
 import siova.lib.Opciones as opc
 from django.contrib.auth.decorators import login_required
-
-def lista_proyectos(request):
-	proyectox = Proyecto.objects.all()
-	return render_to_response('lista_proyectos.html',{'lista':proyectox})
-
-def lista_facultades(request):
-	facultad = Facultad.objects.all()
-	return render_to_response('lista_facultades.html',{'lista':facultad})
-
-def lista_programas(request):
-	programa = programa.objects.all()
-	return render_to_response('lista_programas.html',{'lista':programa})
-
-def lista_estandares(request):
-	estandares = estandares.objects.all()
-	return render_to_response('lista_estandares.html',{'lista':estandares})
+from decimal import Decimal
 
 def Proyecto(request):
 	"""
 	Vista de acceso al usuario con rol de Catalogador, de esta manera se le permitirá crearProyectos	
 	"""
 	if request.user.profile.rol == 'rcat':
-		proyectoObj= Objeto.objects.filter(creador=request.user.id).filter(proyecto__isnull=False)		
+		proyectoObj= Objeto.objects.filter(proyecto__isnull=False)		
 		gruposu = request.user.groups.all()
 		errores = False
 		error1 = False
@@ -60,7 +44,8 @@ def Proyecto(request):
 							re = formularioObj.cleaned_data['repositorio']#se toma el repositorio
 							pro=formularioPro.save(commit=False)#se guarda una instancia temporal
 							ti = formularioEsp.cleaned_data['lc1_titulo']
-							pro.titulo = ti #se asocia el proyecto con su titulo 
+							pro.titulo = ti #se asocia el proyecto con su titulo
+							pro.nota=Decimal('0.0')
 							pro.save()
 							f=formularioObj.save(commit=False)#se guarda un instancia temporañ
 							f.espec_lom = esp # se asocia el objeto con su especificaciónLOM
@@ -101,44 +86,6 @@ def Proyecto(request):
 			formularioPro=ProyectoForm()
 
 		return render_to_response('proyecto.html', {'usuario':request.user, 'proyecto':proyectoObj, 'formObj':formularioObj, 'formPro':formularioPro, 'formEsp':formularioEsp,'errores':errores,'l_errores':l_errores}, context_instance=RequestContext(request))
-	
-	elif request.user.profile.rol == 'rrev':
-		proyectoPro1= Objeto.objects.filter(creador=request.user.id).filter(proyecto__isnull=False)
-		repositorios = []
-		for g in request.user.groups.all():
-			repositorios.extend(list(Repositorio.objects.filter(grupos=g) | Repositorio.objects.filter(publico=True)))
-		repositorios = list(set(repositorios)) #quitar duplicados en la lista
-		objetos = []
-		for r in repositorios:
-			if len(objetos) == 0:
-				objetos = list(Objeto.objects.filter(repositorio=r).filter(publicado=True))
-			else:
-				objetos.extend(list(Objeto.objects.filter(repositorio=r).filter(publicado=True)))
-
-		catn1 = RutaCategoria.objects.filter(cat_padre=None)
-		catnTemp = list(RutaCategoria.objects.all().exclude(cat_padre=None))
-		catn2=[]
-		catn3=[]
-		temp=0
-		for c in catn1:
-			for c1 in catnTemp:
-				if c1.cat_padre == c:
-					if c1 in catn2:
-						temp=1 #variable temporal sin relevancia en la lógica
-					else:
-						catn2.append(c1)
-		for d in catn2:
-			for d1 in catnTemp:
-				if d1.cat_padre == d:
-					if d1 in catn3:
-						temp=2 #variable temporal sin relevancia en la lógica
-					else:
-						catn3.append(d1)
-		formulario=cEspecificacionForm
-
-		return render_to_response('revisor.html', {'usuario':request.user, 'proyecto':proyectoPro1, 'form':formulario, 'repos':repositorios, 'objetos':objetos, 'catn1':catn1, 'catn2':catn2, 'catn3':catn3 }, context_instance=RequestContext(request))
-	else:
-		return HttpResponseRedirect('/')
 
 @login_required(login_url='/ingresar')
 def verProyecto(request, id_proyecto):
@@ -146,6 +93,8 @@ def verProyecto(request, id_proyecto):
 	En esta vista se desplegarán la información del Proyecto seleccionado
 	"""
 	obj=Objeto.objects.get(pk=id_proyecto)
+	#Se consultan los indicadores asociados al proyecto
+	l_indicadores = obj.proyecto.indicadores.all().order_by('factor')
 	gruposobj = obj.repositorio.grupos.all()
 	gruposu = request.user.groups.all()
 	puedever=False
@@ -154,22 +103,10 @@ def verProyecto(request, id_proyecto):
 			if go == gu:
 				puedever=True
 	if puedever | obj.repositorio.publico:
-		idiom={}
-		nivel_a={}
-		format={}
-		tipo_i={}
-		nivel_i={}
-		contex={}
-		[idiom.update({k:v}) for k,v in opc.get_idiomas()]
-		[nivel_a.update({k:v}) for k,v in opc.get_nivel_agregacion()]
-		[format.update({k:v}) for k,v in opc.get_tipo_recurso()]
-		[tipo_i.update({k:v}) for k,v in opc.get_tipo_interactividad()]
-		[nivel_i.update({k:v}) for k,v in opc.get_nivel_interactividad()]
-		[contex.update({k:v}) for k,v in opc.get_contexto()]
 		if request.user.is_authenticated():
-			data={'usuario':request.user, 'objeto':obj, 'espec':obj.espec_lom, 'autores':obj.autores.all(), 'keywords':obj.palabras_claves.all(),'idioma':idiom[obj.espec_lom.lc1_idioma],'niv_agr':nivel_a[obj.espec_lom.lc1_nivel_agregacion],'formato':format[obj.espec_lom.lc4_tipo_rec],'tipo_i':tipo_i[obj.espec_lom.lc4_tipo_inter],'nivel_i':nivel_i[obj.espec_lom.lc4_nivel_inter],'context':contex[obj.espec_lom.lc4_contexto], 'proyecto':obj.proyecto}
+			data={'usuario':request.user, 'objeto':obj, 'espec':obj.espec_lom, 'autores':obj.autores.all(), 'keywords':obj.palabras_claves.all(), 'proyecto':obj.proyecto,'indicadores':l_indicadores}
 		else:
-			data={'objeto':obj, 'espec':obj.espec_lom, 'autores':obj.autores.all(), 'keywords':obj.palabras_claves.all(),'idioma':idiom[obj.espec_lom.lc1_idioma],'niv_agr':nivel_a[obj.espec_lom.lc1_nivel_agregacion],'formato':format[obj.espec_lom.lc4_tipo_rec],'tipo_i':tipo_i[obj.espec_lom.lc4_tipo_inter],'nivel_i':nivel_i[obj.espec_lom.lc4_nivel_inter],'context':contex[obj.espec_lom.lc4_contexto], 'proyecto':obj.proyecto}
+			data={'objeto':obj, 'espec':obj.espec_lom, 'autores':obj.autores.all(), 'keywords':obj.palabras_claves.all(),'proyecto':obj.proyecto,'indicadores':l_indicadores}
 		return render_to_response('verProyecto.html',data,context_instance=RequestContext(request))
 	else:
 		return HttpResponseRedirect('/')
@@ -260,81 +197,63 @@ def asociarProyecto(request,id_objeto):
 	"""
 	Vista de acceso al usuario con rol de Catalogador, de esta manera se le permitirá asociar y modificar proyectos
 	"""
-	obj = Objeto.objects.get(pk=id_objeto)#objeto que se está modificando
-	fac = Factor_competencias.objects.filter(ruta_categoria=obj.ruta_categoria)
-	lindicadores1 = []
-	lindicadores2 = []
-	lenunciado = []	
-	l_errores = []				
 	if request.user.profile.rol == 'rcat':
-		obj=Objeto.objects.get(pk=id_objeto)#objeto que se está modificando
-		pro=obj.proyecto
-		if obj.creador == request.user:
-			for f in fac:
-				if len(lenunciado) == 0:
-					lenunciado = list(Enunciado.objects.filter(factor=f))
-				else:
-					lenunciado.extend(list(Enunciado.objects.filter(factor=f)))
-				if len(lenunciado) > 0:
-					for e in lenunciado:
-						if len(lindicadores1) == 0:
-							lindicadores1 = list(Indicador.objects.filter(enunciado=e).filter(grados__nominacion='gpr'))
-						else:
-							lindicadores1.extend(list(Indicador.objects.filter(enunciado=e).filter(grados__nominacion='gpr')))
-						if len(lindicadores2) == 0:
-							lindicadores2 = list(Indicador.objects.filter(enunciado=e).filter(grados__nominacion='gcu'))
-						else:
-							lindicadores2.extend(list(Indicador.objects.filter(enunciado=e).filter(grados__nominacion='gcu')))				
-				else:
-					if len(lindicadores1) == 0:
-						lindicadores1 = list(Indicador.objects.filter(factor=f).filter(grados__nominacion='gpr'))
-					else:
-						lindicadores1.extend(list(Indicador.objects.filter(factor=f).filter(grados__nominacion='gpr')))
-					if len(lindicadores2) == 0:
-						lindicadores2 = list(Indicador.objects.filter(factor=f).filter(grados__nominacion='gcu'))
-					else:
-						lindicadores2.extend(list(Indicador.objects.filter(factor=f).filter(grados__nominacion='gcu')))
-			l_oind=pro.indicadores.all()
-			if request.method == 'POST':
-				error1 = False
-				errores = False
-				gruposu = request.user.groups.all()
-				l_indicadores = request.POST.iteritems()
-				b=False
-				c=False
-				for key, value in l_indicadores:
-					if key.find('ind_')>=0:
-						l_errores.append(value)
-						i = Indicador.objects.get(pk=value)
-						for o in l_oind:
-							if i == o:
-								b=True
-						if b == False:
-							pro.indicadores.add(i)
-						else:
-							b=False
-					else:
-						errores=True
-				l_indicadores_temp = request.POST.iteritems()
-				for o in l_oind:
-					for k, v in l_indicadores_temp:
-						cadena=v.replace('ind_','')
-						l_errores.append(cadena)
-						l_errores.append(o.pk)
-						if k.find('ind_')>=0:
-							if o.pk == cadena:
-								c=True
-						l_errores.append(c)
-					if c == False:
-						pro.indicadores.remove(o)
-					else:
-						c=False
-				l_oind=pro.indicadores.all()
-				return render_to_response('asociarProyecto.html',{'usuario':request.user,'i':i,'l_oind':l_oind,'l_errores':l_errores,'pro':pro.indicadores,'factor':fac, 'lenunciado':lenunciado,'lindicadores1':lindicadores1, 'lindicadores2':lindicadores2},context_instance=RequestContext(request))
+		obj = Objeto.objects.get(pk=id_objeto)#objeto que se está asociando
+		fac = Factor_competencias.objects.filter(ruta_categoria=obj.ruta_categoria)
+		#Se consultan los indicadores asociados al proyecto
+		#l_indicadores_previa = obj.proyecto.indicadores.all().order_by('factor')
+		lindicadores = []
+		lenunciado = []
+		l_errores = []
+		pro=obj.proyecto #instancia del proyecto asociado
+		for f in fac:
+			if len(lenunciado) == 0:
+				lenunciado = list(Enunciado.objects.filter(factor=f))
 			else:
-				l_oind=pro.indicadores.all()
-				return render_to_response('asociarProyecto.html',{'usuario':request.user,'l_oind':l_oind,'l_errores':l_errores,'pro':pro.indicadores,'factor':fac, 'lenunciado':lenunciado,'lindicadores1':lindicadores1, 'lindicadores2':lindicadores2},context_instance=RequestContext(request))
+				lenunciado.extend(list(Enunciado.objects.filter(factor=f)))
+		if len(lenunciado) > 0:
+			for e in lenunciado:
+				if len(lindicadores) == 0:
+					lindicadores = list(Indicador.objects.filter(enunciado=e))
+				else:
+					lindicadores.extend(list(Indicador.objects.filter(enunciado=e)))
 		else:
-			return HttpResponseRedirect('/')
+			for f in fac:
+				if len(lindicadores) == 0:
+					lindicadores = list(Indicador.objects.filter(factor=f))
+				else:
+					lindicadores.extend(list(Indicador.objects.filter(factor=f)))
+		l_oind=pro.indicadores.all()
+		if request.method == 'POST':
+			error1 = False
+			errores = False
+			gruposu = request.user.groups.all()
+			l_indicadores = request.POST.iteritems()
+			b=False
+			c=False
+			for key, value in l_indicadores:
+				if key.find('ind_')>=0:
+					i = Indicador.objects.get(pk=value)
+					if i not in l_oind:
+						pro.indicadores.add(i)
+			for o in l_oind:
+				l_indicadores_temp = request.POST.iteritems()
+				temp=""
+				for k, v in l_indicadores_temp:
+					if k.find('ind_')>=0:
+						temp=temp+k.lstrip('ind_')
+				if str(o.pk) not in temp:
+					pro.indicadores.remove(o)
+			if len(pro.indicadores.all())==0:
+				pro.fase='f1'
+			else:
+				pro.fase='f2'
+			pro.save()
+			l_oind=pro.indicadores.all()
+			return HttpResponseRedirect('/proyecto/'+str(obj.pk))
+		else:
+			data={'usuario':request.user,'objeto':obj,'proyecto':pro,'espec':obj.espec_lom,'autores':obj.autores.all(),'keywords':obj.palabras_claves.all(),'l_oind':l_oind,'l_errores':l_errores,'factor':fac,'lenunciado':lenunciado,'lindicadores':lindicadores}
+			#, 'indicadores':l_indicadores_previa
+		return render_to_response('asociarProyecto.html',data,context_instance=RequestContext(request))
 	else:
 		return HttpResponseRedirect('/')

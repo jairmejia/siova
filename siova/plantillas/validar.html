@@ -20,16 +20,27 @@
 		<div id="descargar"><a class="descarga" href="/descarga/{{objeto.pk}}" target="_blank">Descargar</a></div>
 	</div>
 	<div class="seccion">
-		<div class="seccion_btn" id="sec1_btn">Metadatos</div>
+		<div class="seccion_btn" id="sec1_btn">Proyecto</div>
 		<div class="sec_desplegar" id="sec1">
 			<dl>
+				<dt>Categoría</dt>
+				<dd>{{objeto.ruta_categoria}}</dd>
+				<dt>Programa académico</dt>
+				<dd>{{proyecto.programa}}</dd>
 				<dt>Fecha</dt>
 				<dd>{{proyecto.fecha|date:"SHORT_DATE_FORMAT"}}</dd>
+				<dt>Fase</dt>
+                <dd>{{proyecto.fase|cut:"f"}}</dd>
 				<dt>Nota</dt>
 				<dd class="{{proyecto.calificacion}}probado">{% widthratio proyecto.nota 1 10 %}%</dd>
 				<dt>Calificación</dt>
 				<dd class="{{proyecto.calificacion}}probado">{{proyecto.get_calificacion_display}}</dd>
 			</dl>
+		</div>
+	</div>
+	<div class="seccion">
+		<div class="seccion_btn" id="sec2_btn">Metadatos</div>
+		<div class="sec_desplegar" id="sec2">
 			<dl>
 				<dt>Título</dt>
 				<dd>{{espec.lc1_titulo}}</dd>
@@ -82,26 +93,24 @@
 				<dd>{{espec.lc5_derechos}}</dd>
 				<dt>Uso Educativo</dt>
 				<dd>{{espec.lc6_uso_educativo}}</dd>
-				<dt>Categoría</dt>
-				<dd>{{objeto.ruta_categoria}}</dd>
 			</dl>
 		</div>
 	</div>
 	<div class="seccion">
-		<div class="seccion_btn" id="sec2_btn">Estándares de Competencia</div>
-		<div class="sec_desplegar" id="sec2">
+		<div class="seccion_btn" id="sec3_btn">Estándares de Competencia</div>
+		<div class="sec_desplegar" id="sec3">
 			<ul>
 			{% if indicadores %}
 		        {% for ind in indicadores %}
 		        	{% ifchanged ind.factor %}<p id="c_fac{{ind.pk}}" class="factores">{{ind.factor}}</p>{% endifchanged %}
 		        	{% if ind.enunciado %}
-		        		{% ifchanged ind.enunciado %}<p id="c_enu{{ind.pk}}" class="enunciados">{{ind.enunciado|truncatechars:80}}</p>{% endifchanged %}
+		        		{% ifchanged ind.enunciado %}<p id="c_enu{{ind.pk}}" class="enunciados">{{ind.enunciado|truncatechars:70}}</p>{% endifchanged %}
 		        	{% endif %}
-		            <li class="indicadores">{{ind|truncatechars:90}}</li>
+		            <li data-full_="{{ind}}" data-grados_="{{ind.grados.all|cut:','}}" class="indicadores">{{ind|truncatechars:80}}</li>
 		        {% endfor %}
 		    {% endif%}
 		    </ul>
-		<div class="sec_desplegar" id="sec1">
+		</div>
 	</div>
 {% endblock %}
 {% block contenidoDer %}

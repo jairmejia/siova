@@ -52,7 +52,7 @@ Clase que permite sobre-escribir la clase Indicadores en la interfaz de administ
 Esto con el fin de modificar las columnas de visualización y los filtros
 """
 class IndicadorAdmin(admin.ModelAdmin):
-	search_fields = ('indicador', 'factor__factor','enunciaado__enunciado')
+	search_fields = ('indicador', 'factor__factor','enunciado__enunciado')
 	list_filter = ('grados__nominacion', 'factor__factor', 'enunciado__enunciado')
 
 """

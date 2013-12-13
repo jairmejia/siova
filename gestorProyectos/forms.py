@@ -14,5 +14,5 @@ class ProyectoForm(ModelForm):
 	class Meta:
 		model=Proyecto
 		#modificación de cada uno de los campos que se muestran en la plantilla para que tengan un tamaño fijo
-		exclude = ('titulo','fase','parametros')
+		exclude = ('titulo','fase','parametros','calificacion','indicadores','nota')
 	fecha = forms.DateField(initial=datetime.date.today, label="Fecha", help_text='Fecha en que el proyecto fue Aprobado')

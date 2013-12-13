@@ -3,14 +3,23 @@
 {% block itemMenu %}
 {% if usuario.profile.rol == 'rcat' %}
 	<li><a class="menusbtn" href="/proyecto">Proyectos</a></li>
-	{% if objeto.creador.pk == usuario.pk %}
+	{% if objeto.proyecto.fase != 'f3' %}
 		<li><a class="menusbtn" id="editarPro" href="/editProyecto/{{objeto.pk}}">Editar Proyecto</a></li>
+	{% endif %}
+	{% if objeto.proyecto.fase == 'f1' %}
+		<li><a class="menusbtn" id="asociarPro" href="/asociarProyecto/{{objeto.pk}}">Asociar Indicadores</a></li>
+	{% endif %}
+	{% if objeto.proyecto.fase == 'f2' %}
+		<li><a class="menusbtn" id="editarAsociacion" href="/asociarProyecto/{{objeto.pk}}">Editar Indicadores</a></li>
 	{% endif %}
 {% endif %}
 {% if usuario.profile.rol == 'rrev' %}
 	<li><a class="menusbtn" href="/revisor">Proyectos</a></li>
 	{% if objeto.proyecto.fase == 'f2' %}
-		<li><a class="menusbtn" id="validarPro" href="/validar/{{objeto.pk}}">Validar Proyecto</a></li>
+		<li><a class="menusbtn" id="validarPro" href="/validar/{{objeto.proyecto.pk}}">Validar Proyecto</a></li>
+	{% endif %}
+	{% if objeto.proyecto.fase == 'f3' %}
+		<li><a class="menusbtn" id="editarValidacion" href="/validar/{{objeto.proyecto.pk}}">Editar Validación</a></li>
 	{% endif %}
 {% endif %}
 {% endblock %}
@@ -28,15 +37,63 @@
 		<p>{{objeto|capfirst}}</p>
 		<div id="descargar"><a class="descarga" href="/descarga/{{objeto.pk}}" target="_blank">Descargar</a></div>
 	</div>
-	<dt>FASE:</dt>
-	<dd>{{objeto.proyecto.fase}}</dd>
+	<div class="seccion">
+		<div class="seccion_btn" id="sec1_btn">Proyecto</div>
+		<div class="sec_desplegar" id="sec1">
+			<dl>
+				<dt>Categoría</dt>
+				<dd>{{objeto.ruta_categoria}}</dd>
+				<dt>Programa académico</dt>
+				<dd>{{proyecto.programa}}</dd>
+				<dt>Fecha</dt>
+				<dd>{{proyecto.fecha|date:"SHORT_DATE_FORMAT"}}</dd>
+				<dt>Fase</dt>
+                <dd>{{proyecto.fase|cut:"f"}}</dd>
+                <dt>Nota</dt>
+				<dd class="{{proyecto.calificacion}}probado">{% widthratio proyecto.nota 1 10 %}%</dd>
+				<dt>Calificación</dt>
+				<dd class="{{proyecto.calificacion}}probado">{{proyecto.get_calificacion_display}}</dd>
+			</dl>
+			{% if usuario.profile.rol == 'rcat' and objeto.proyecto.fase != 'f3'%}
+			    <br>
+				<div id="editarPro"><a class="descarga" href="/editProyecto/{{objeto.pk}}">Editar Proyecto</a></div>
+			{% endif %}
+		</div>
+	</div>
+	<div class="seccion">
+		<div class="seccion_btn" id="sec2_btn">Estándares de Competencia</div>
+		<div class="sec_desplegar" id="sec2">
+			<ul>
+			{% if indicadores %}
+		        {% for ind in indicadores %}
+		        	{% ifchanged ind.factor %}<p id="c_fac{{ind.pk}}" class="factores">{{ind.factor}}</p>{% endifchanged %}
+		        	{% if ind.enunciado %}
+		        		{% ifchanged ind.enunciado %}<p id="c_enu{{ind.pk}}" class="enunciados">{{ind.enunciado|truncatechars:70}}</p>{% endifchanged %}
+		        	{% endif %}
+		            <li data-full_="{{ind}}" data-grados_="{{ind.grados.all|cut:','}}" class="indicadores">{{ind|truncatechars:80}}</li>
+		        {% endfor %}
+		        {% if usuario.profile.rol == 'rcat' %}
+			    	<br>
+		        	<div id="editarAsociaciones"><a class="descarga" href="/asociarProyecto/{{objeto.pk}}">Editar Indicadores</a></div>
+		        {% endif %}
+		    {% else %}
+		    	<li class="indicadores">No se han asociado indicadores</li>
+		    	{% if usuario.profile.rol == 'rcat' %}
+			    	<br>
+			    	<div id="asociarPro"><a class="descarga" href="/asociarProyecto/{{objeto.pk}}">Asociar Indicadores</a></div>
+		    	{% endif %}
+		    {% endif%}
+		    </ul>
+		</div>
+	</div>
 {% endblock %}
 {% block contenidoDer %}
+	<div class="titulo_item" id="tit_obj"><p>Metadatos</p></div>
 	<dl>
 		<dt>Título</dt>
 		<dd>{{espec.lc1_titulo}}</dd>
 		<dt>Idioma</dt>
-		<dd>{{ idioma }}
+		<dd>{{ espec.get_lc1_idioma_display }}
 		</dd>
 		<dt>Descripción</dt>
 		<dd>{{espec.lc1_descripcion}}</dd>
@@ -51,7 +108,7 @@
 		<dt>cobertura</dt>
 		<dd>{{espec.lc1_cobertura}}</dd>
 		<dt>Nivel de Agregación</dt>
-		<dd>{{ niv_agr }}</dd>
+		<dd>{{ espec.get_lc1_nivel_agregacion_display }}</dd>
 		<dt>Versión</dt>
 		<dd>{{espec.lc2_version}}</dd>
 		<dt>Autores</dt>
@@ -65,7 +122,7 @@
 		<dt>Fecha</dt>
 		<dd>{{espec.lc2_fecha}}</dd>
 		<dt>Formato</dt>
-		<dd>{{formato}}</dd>
+		<dd>{{espec.get_lc4_tipo_rec_display}}</dd>
 		<dt>Tamaño</dt>
 		<dd>{{objeto.archivo.size|filesizeformat}}</dd>
 		<dt>Requerimientos</dt>
@@ -73,22 +130,16 @@
 		<dt>Instrucciones</dt>
 		<dd>{{espec.lc3_instrucciones}}</dd>
 		<dt>Tipo de interactividad</dt>
-		<dd>{{tipo_i}}</dd>
+		<dd>{{espec.get_lc4_tipo_inter_display}}</dd>
 		<dt>Nivel de Interactividad</dt>
-		<dd>{{nivel_i}}</dd>
+		<dd>{{espec.get_lc4_nivel_inter_display}}</dd>
 		<dt>Población</dt>
 		<dd>{{espec.lc4_poblacion}}</dd>
 		<dt>Contexto</dt>
-		<dd>{{context}}</dd>
+		<dd>{{espec.get_lc4_contexto_display}}</dd>
 		<dt>Derechos de Autor</dt>
 		<dd>{{espec.lc5_derechos}}</dd>
 		<dt>Uso Educativo</dt>
 		<dd>{{espec.lc6_uso_educativo}}</dd>
-		<dt>Categoría</dt>
-		<dd>{{objeto.ruta_categoria}}</dd>
-		<dt>Fecha</dt>
-		<dd>{{objeto.proyecto.fecha}}</dd>
-		<dt>Programa académico</dt>
-		<dd>{{objeto.proyecto.programa}}</dd>
 	</dl>
 {% endblock %}

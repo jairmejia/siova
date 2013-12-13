@@ -352,11 +352,19 @@ function arranque(name) {
     $("#sec1_btn").click(function(e){
         $("#sec1").slideToggle();
         $("#sec2").slideUp();
+        $("#sec3").slideUp();
     });
 
     $("#sec2_btn").click(function(e){
         $("#sec1").slideUp();
+        $("#sec3").slideUp();
         $("#sec2").slideToggle();
+    });
+
+    $("#sec3_btn").click(function(e){
+        $("#sec1").slideUp();
+        $("#sec2").slideUp();
+        $("#sec3").slideToggle();
     });
 
     $(".sec_formV_par").click(function(e){
@@ -382,6 +390,18 @@ function arranque(name) {
         $("#aprobado_listaP").slideUp();
         $("#rprobado_listaP").slideUp();
         $("#sprobado_listaP").slideToggle();
+    });
+
+    $(".ind_grados").click(function(e){
+        $(this).next().slideToggle();
+    });
+
+    $(".lap_factores").click(function(e){
+        $(this).next().slideToggle();
+    });
+
+    $(".lap_enunciados").click(function(e){
+        $(this).next().slideToggle();
     });
 
 

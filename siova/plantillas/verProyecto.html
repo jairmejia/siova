@@ -72,18 +72,25 @@
 		        	{% endif %}
 		            <li data-full_="{{ind}}" data-grados_="{{ind.grados.all|cut:','}}" class="indicadores">{{ind|truncatechars:80}}</li>
 		        {% endfor %}
-		        {% if usuario.profile.rol == 'rcat' %}
-			    	<br>
-		        	<div id="editarAsociaciones"><a class="descarga" href="/asociarProyecto/{{objeto.pk}}">Editar Indicadores</a></div>
-		        {% endif %}
 		    {% else %}
 		    	<li class="indicadores">No se han asociado indicadores</li>
-		    	{% if usuario.profile.rol == 'rcat' %}
+		    	{% if usuario.profile.rol == 'rcat' and objeto.proyecto.fase != 'f3' %}
 			    	<br>
 			    	<div id="asociarPro"><a class="descarga" href="/asociarProyecto/{{objeto.pk}}">Asociar Indicadores</a></div>
 		    	{% endif %}
 		    {% endif%}
 		    </ul>
+		    <br>
+		    <p class="operaciones">Operaciones Mentales</p>
+		    <ul>
+		    	{% for op in operaciones %}
+		            <li data-descr="{{op}}" class="operaciones_items">{{op}}</li>
+		        {% endfor %}
+		    </ul>
+		    {% if usuario.profile.rol == 'rcat' and objeto.proyecto.fase != 'f3' %}
+		    	<br>
+	        	<div id="editarAsociaciones"><a class="descarga" href="/asociarProyecto/{{objeto.pk}}">Editar Indicadores</a></div>
+	        {% endif %}
 		</div>
 	</div>
 {% endblock %}

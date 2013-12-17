@@ -587,6 +587,49 @@ ul
 	width: 100%;
 }
 
+.operaciones
+{
+	color: #055a9b;
+	font-size: 1.1em;
+	font-weight: bold;
+	margin: 0.5em auto;
+	padding: 0.2em;
+	width: 100%;
+}
+
+.operaciones_items
+{
+	color: #055a9b;
+	font-size: 0.9em;
+	margin: 0.2em 0 0.2em 1em;
+	padding: 0.2em;
+	width: 90%;
+}
+
+.operaciones_items::before
+{
+	content: "\00BB";
+}
+
+.operaciones_items::after
+{
+	content: attr(data-descr);
+	position: relative;
+	background-color: white;
+	border-radius: 0.5em;
+	color: #666;
+	font-size: 0.8em;
+	text-align: justify;
+	top: 0;
+	display: none;
+	transition:all .5s;
+}
+
+.operaciones_items:hover::after
+{
+	display: block;
+}
+
 
 /*******************En asociar Proyecto***********************/
 
@@ -622,18 +665,17 @@ ul
 	width: 90%;
 }
 
-.lap_indicadores::before
+/*.lap_indicadores::before
 {
 	content: attr(data-grados);
-	position: absolute;
+	position: relative;
 	background-color: white;
 	border-radius: 0.5em;
 	color: #666;
 	font-size: 0.8em;
 	padding: 0.1em 0.3em;
 	text-align: justify;
-	top: 10;
-	right: 120px;
+	top: 80px;
 	display: none;
 	transition:all .5s;
 }
@@ -641,7 +683,7 @@ ul
 .lap_indicadores:hover::before
 {
 	display: block;
-}
+}*/
 
 .lap_indicadores::after
 {
@@ -697,6 +739,65 @@ ul
 	display: none;
 }
 
+.lap_operaciones
+{
+	background-color: #fff;
+	border-radius: 0.3em;
+	color: #666;
+	cursor:pointer;
+	font-size: 1.1em;
+	font-weight: bold;
+	margin: 0.4em auto;
+	padding: 0.2em 0.2em;
+	width: 95%;
+}
+
+.lap_operaciones_items
+{
+	color: #055a9b;
+	font-size: 1.1em;
+	margin: 0.2em 0 0.2em 1.5em;
+	padding: 0.2em;
+	width: 90%;
+}
+
+.lap_operaciones_items::after
+{
+	content: attr(data-descr);
+	position: relative;
+	background-color: white;
+	border-radius: 0.5em;
+	color: #666;
+	font-size: 0.9em;
+	padding: 0.2em 0.4em;
+	text-align: justify;
+	top: 0;
+	display: none;
+	transition:all .5s;
+}
+
+.lap_operaciones_items:hover::after
+{
+	display: block;
+}
+
+.lap_operaciones::before
+{
+	content: "\00BB";
+	opacity: 0;
+}
+
+.lap_operaciones:hover::before
+{
+	opacity: 1;
+}
+
+
+#lap_operaciones_lista
+{
+	display: none;
+}
+
 /*/*************************************/
 
 /*---Secciones----*/
@@ -747,6 +848,7 @@ ul
 {
 	display: none;
 }
+
 
 .sec_formV_par
 {
@@ -802,6 +904,51 @@ ul
 	color: #999;
 	font-weight: bold;
 }
+
+.calificacion_10
+{
+	background-color: #b6d490;
+}
+
+.calificacion_10::before
+{
+	font-size: 0.8em;
+	content: "(Totalmente) ";
+}
+
+.calificacion_7
+{
+	background-color: #b6d490;
+}
+
+.calificacion_7::before
+{
+	font-size: 0.8em;
+	content: "(Medianamente) ";
+}
+
+.calificacion_5
+{
+	background-color: #b6d490;
+}
+
+.calificacion_5::before
+{
+	font-size: 0.8em;
+	content: "(Escasamente) ";
+}
+
+.calificacion_2
+{
+	background-color: #b6d490;
+}
+
+.calificacion_2::before
+{
+	font-size: 0.8em;
+	content: "(No Cumple) ";
+}
+
 /*----------------*/
 
 

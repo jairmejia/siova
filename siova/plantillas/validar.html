@@ -110,6 +110,13 @@
 		        {% endfor %}
 		    {% endif%}
 		    </ul>
+		    <br>
+		    <p class="operaciones">Operaciones Mentales</p>
+		    <ul>
+		    	{% for op in operaciones %}
+		            <li data-descr="{{op}}" class="operaciones_items">{{op}}</li>
+		        {% endfor %}
+		    </ul>
 		</div>
 	</div>
 {% endblock %}
@@ -146,7 +153,7 @@
 								<p class="tipos_parametros" id='{{key}}{{ forloop.parentloop.counter0 }}'>Asociados a {{ value }}</p>
 							{% endif %}
 						{% endfor %}
-						<div class="sec_formV_par"  data-descripcion="{{p.descripcion}}" id="sec_formV_par{{forloop.counter}}">{{forloop.counter}} - {{p.nombre}} ({% widthratio p.ponderacion 1 100 %}%)</div>
+						<div class="sec_formV_par"  data-descripcion="{{p.descripcion}}" id="sec_formV_par{{forloop.counter}}">{{p.nombre}} ({% widthratio p.ponderacion 1 100 %}%)</div>
 					{% endif %}
 				{% endfor %}
 				<div class="sec_formV" id="sec_formV_{{forloop.counter}}">{{ form.as_p }}</div>

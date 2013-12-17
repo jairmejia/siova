@@ -1,5 +1,5 @@
 #encoding:utf-8
-from gestorProyectos.models import Proyecto, Facultad, Programa, Factor_competencias, Indicador, Enunciado
+from gestorProyectos.models import Proyecto, Facultad, Programa, Factor_competencias, Indicador, Enunciado, OperacionMental
 from django.shortcuts import render_to_response
 from gestorObjetos.models import Repositorio, Objeto, Autor, RutaCategoria, EspecificacionLOM, PalabraClave
 from gestorProyectos.forms import ProyectoForm
@@ -95,6 +95,7 @@ def verProyecto(request, id_proyecto):
 	obj=Objeto.objects.get(pk=id_proyecto)
 	#Se consultan los indicadores asociados al proyecto
 	l_indicadores = obj.proyecto.indicadores.all().order_by('factor')
+	l_operaciones = obj.proyecto.operaciones.all()
 	gruposobj = obj.repositorio.grupos.all()
 	gruposu = request.user.groups.all()
 	puedever=False
@@ -104,7 +105,7 @@ def verProyecto(request, id_proyecto):
 				puedever=True
 	if puedever | obj.repositorio.publico:
 		if request.user.is_authenticated():
-			data={'usuario':request.user, 'objeto':obj, 'espec':obj.espec_lom, 'autores':obj.autores.all(), 'keywords':obj.palabras_claves.all(), 'proyecto':obj.proyecto,'indicadores':l_indicadores}
+			data={'usuario':request.user, 'objeto':obj, 'espec':obj.espec_lom, 'autores':obj.autores.all(), 'keywords':obj.palabras_claves.all(), 'proyecto':obj.proyecto,'indicadores':l_indicadores,'operaciones':l_operaciones}
 		else:
 			data={'objeto':obj, 'espec':obj.espec_lom, 'autores':obj.autores.all(), 'keywords':obj.palabras_claves.all(),'proyecto':obj.proyecto,'indicadores':l_indicadores}
 		return render_to_response('verProyecto.html',data,context_instance=RequestContext(request))
@@ -200,60 +201,95 @@ def asociarProyecto(request,id_objeto):
 	if request.user.profile.rol == 'rcat':
 		obj = Objeto.objects.get(pk=id_objeto)#objeto que se está asociando
 		fac = Factor_competencias.objects.filter(ruta_categoria=obj.ruta_categoria)
+		operaciones=OperacionMental.objects.all()
 		#Se consultan los indicadores asociados al proyecto
 		#l_indicadores_previa = obj.proyecto.indicadores.all().order_by('factor')
 		lindicadores = []
 		lenunciado = []
 		l_errores = []
 		pro=obj.proyecto #instancia del proyecto asociado
-		for f in fac:
-			if len(lenunciado) == 0:
-				lenunciado = list(Enunciado.objects.filter(factor=f))
-			else:
-				lenunciado.extend(list(Enunciado.objects.filter(factor=f)))
-		if len(lenunciado) > 0:
-			for e in lenunciado:
-				if len(lindicadores) == 0:
-					lindicadores = list(Indicador.objects.filter(enunciado=e))
-				else:
-					lindicadores.extend(list(Indicador.objects.filter(enunciado=e)))
+		l_oind=pro.indicadores.all()
+		operaciones2=pro.operaciones.all()
+		error = False
+		if pro.fase=='f3':
+			l_errores.append("El proyecto no puede ser asociado a estándares de competencia debido a que ya ha sido valorado")
+			error=True
 		else:
 			for f in fac:
-				if len(lindicadores) == 0:
-					lindicadores = list(Indicador.objects.filter(factor=f))
+				if len(lenunciado) == 0:
+					lenunciado = list(Enunciado.objects.filter(factor=f))
 				else:
-					lindicadores.extend(list(Indicador.objects.filter(factor=f)))
-		l_oind=pro.indicadores.all()
+					lenunciado.extend(list(Enunciado.objects.filter(factor=f)))
+			if len(lenunciado) > 0:
+				for e in lenunciado:
+					if len(lindicadores) == 0:
+						lindicadores = list(Indicador.objects.filter(enunciado=e))
+					else:
+						lindicadores.extend(list(Indicador.objects.filter(enunciado=e)))
+			else:
+				for f in fac:
+					if len(lindicadores) == 0:
+						lindicadores = list(Indicador.objects.filter(factor=f))
+					else:
+						lindicadores.extend(list(Indicador.objects.filter(factor=f)))
 		if request.method == 'POST':
-			error1 = False
 			errores = False
+			error2 = False
+			error3 = False
 			gruposu = request.user.groups.all()
 			l_indicadores = request.POST.iteritems()
-			b=False
-			c=False
 			for key, value in l_indicadores:
 				if key.find('ind_')>=0:
-					i = Indicador.objects.get(pk=value)
-					if i not in l_oind:
-						pro.indicadores.add(i)
-			for o in l_oind:
-				l_indicadores_temp = request.POST.iteritems()
-				temp=""
-				for k, v in l_indicadores_temp:
-					if k.find('ind_')>=0:
-						temp=temp+k.lstrip('ind_')
-				if str(o.pk) not in temp:
-					pro.indicadores.remove(o)
-			if len(pro.indicadores.all())==0:
-				pro.fase='f1'
-			else:
+					error2=True
+				if key.find('op_')>=0:
+					error3=True
+			if error2 and error3: #Quiere decir que se eligieron tanto indicadores como operaciones mentales
+				l_indicadores = request.POST.iteritems()
+				for key, value in l_indicadores:
+					if key.find('ind_')>=0:
+						i = Indicador.objects.get(pk=value)
+						if i not in l_oind:
+							pro.indicadores.add(i)
+					if key.find('op_')>=0:
+						operacion = OperacionMental.objects.get(pk=value)
+						if operacion not in operaciones2:
+							pro.operaciones.add(operacion)
+
+				for o in l_oind:
+					l_indicadores_temp = request.POST.iteritems()
+					temp=""
+					for k, v in l_indicadores_temp:
+						if k.find('ind_')>=0:
+							temp=temp+k.lstrip('ind_')
+					if str(o.pk) not in temp:
+						pro.indicadores.remove(o)
+				
+				for op in operaciones2:
+					l_indicadores_temp = request.POST.iteritems()
+					temp=""
+					for k, v in l_indicadores_temp:
+						if k.find('op_')>=0:
+							temp=temp+k.lstrip('op_')
+					if str(op.pk) not in temp:
+						pro.operaciones.remove(op)
 				pro.fase='f2'
-			pro.save()
-			l_oind=pro.indicadores.all()
-			return HttpResponseRedirect('/proyecto/'+str(obj.pk))
-		else:
-			data={'usuario':request.user,'objeto':obj,'proyecto':pro,'espec':obj.espec_lom,'autores':obj.autores.all(),'keywords':obj.palabras_claves.all(),'l_oind':l_oind,'l_errores':l_errores,'factor':fac,'lenunciado':lenunciado,'lindicadores':lindicadores}
-			#, 'indicadores':l_indicadores_previa
+				pro.save()
+				return HttpResponseRedirect('/proyecto/'+str(obj.pk))
+			elif error2:
+				l_errores.append("No es posible asociar indicadores sin al menos una operación mental")
+			elif error3:
+				l_errores.append("No asoció ningún indicador al proyecto")
+			else:
+				pro.fase='f1'
+				for p3 in pro.indicadores.all():
+					pro.indicadores.remove(p3)
+				for o3 in pro.operaciones.all():
+					pro.operaciones.remove(o3)
+				pro.save()
+				return HttpResponseRedirect('/proyecto/'+str(obj.pk))
+		l_oind=pro.indicadores.all()
+		operaciones2=pro.operaciones.all()
+		data={'usuario':request.user,'objeto':obj,'proyecto':pro,'espec':obj.espec_lom,'operaciones':operaciones,'operaciones2':operaciones2,'autores':obj.autores.all(),'keywords':obj.palabras_claves.all(),'l_oind':l_oind,'l_errores':l_errores,'factor':fac,'lenunciado':lenunciado,'lindicadores':lindicadores}
 		return render_to_response('asociarProyecto.html',data,context_instance=RequestContext(request))
 	else:
 		return HttpResponseRedirect('/')

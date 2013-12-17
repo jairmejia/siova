@@ -106,11 +106,26 @@
                 <li class="indicadores">Sin indicadores Previos</li>
             {% endif%}
             </ul>
+            <br>
+            <p class="operaciones">Operaciones Mentales</p>
+            <ul>
+                {% for op in operaciones2 %}
+                    <li data-descr="{{op}}" class="operaciones_items">{{op}}</li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 {% endblock %}
 {% block contenidoDer %}
     <div class="titulo_item" id="tit_obj"><p>Indicadores de Competencia</p></div>
+    {% if l_errores %}
+        {% for err in l_errores%}
+            <p class="errores">{{err}}</p>
+        {% endfor %}
+        {% if error %}
+            <center><div id="proyecto"><a class="descarga" href="/proyecto/{{objeto.pk}}">Volver</a></div></center>
+        {% endif %}
+    {% endif %}
     <form id="asociar_form" method="post" action="">{% csrf_token %}
     <ul id="lista_factores">
         {% for f in factor %}
@@ -124,7 +139,7 @@
                                     {% if lindicadores %}  
                                         {% for ind in lindicadores%}
                                             {% if ind.enunciado == e%}
-                                                <li data-grados="{{ind.grados.all|cut:','}}" data-full="{{ind}}" class="lap_indicadores">
+                                                <li data-grados="{{ind.grados.all|cut:','}}" data-full="{{ind}} {{ind.grados.all|cut:','}}" class="lap_indicadores">
                                                     {% if ind in l_oind %}
                                                         <input type="checkbox" id="ind_{{ind.pk}}" name="ind_{{ind.pk}}" value="{{ind.pk}}" checked="True">
                                                     {% else %}
@@ -156,6 +171,20 @@
                         {% endif %}
                     {% endif %}
                 </ul>
+            </li>
+        {% endfor %}
+    </ul>
+    <hr>
+    <div id="lap_operaciones_l" class="lap_operaciones">Operaciones Mentales</div>
+    <ul id="lap_operaciones_lista">
+        {% for op in operaciones %}
+            <li class="lap_operaciones_items" data-descr="{{op.descripcion}}">
+                {% if op in  operaciones2%}
+                    <input type="checkbox" id="op_{{op.pk}}" name="op_{{op.pk}}" value="{{op.pk}}" checked="True">
+                {% else %}
+                    <input type="checkbox" id="op_{{op.pk}}" name="op_{{op.pk}}" value="{{op.pk}}">
+                {% endif %}
+                <label for="op_{{op.pk}}">{{op|truncatechars:70}}</label>
             </li>
         {% endfor %}
     </ul>

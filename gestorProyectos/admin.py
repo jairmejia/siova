@@ -1,5 +1,5 @@
 #encoding:utf-8
-from gestorProyectos.models import Proyecto, Facultad, Programa, Grado, Factor_competencias, Enunciado, Indicador, Parametro, Validacion
+from gestorProyectos.models import Proyecto, Facultad, Programa, Grado, Factor_competencias, Enunciado, Indicador, Parametro, Validacion, OperacionMental
 from django.contrib import admin
 
 """
@@ -19,7 +19,7 @@ class ProyectoAdmin(admin.ModelAdmin):
 	list_display = ('titulo', 'fase', 'calificacion', 'nota')
 	search_fields = ('titulo', 'programa__nombre')
 	list_filter = ('programa__nombre', 'fase', 'calificacion')
-	filter_horizontal =('indicadores',)
+	filter_horizontal =('indicadores','operaciones')
 	date_hierarchy = 'fecha'
 
 """
@@ -63,6 +63,7 @@ class ParametroAdmin(admin.ModelAdmin):
 	list_display = ('nombre', 'ponderacion')
 	list_filter = ('tipo',)
 
+
 admin.site.register(Proyecto, ProyectoAdmin),
 admin.site.register(Facultad),
 admin.site.register(Programa, ProgramaAdmin),
@@ -72,3 +73,4 @@ admin.site.register(Enunciado, EnunciadoAdmin),
 admin.site.register(Indicador, IndicadorAdmin),
 admin.site.register(Parametro, ParametroAdmin),
 admin.site.register(Validacion, ValidacionAdmin)
+admin.site.register(OperacionMental)

@@ -41,6 +41,8 @@ def validar(request, id_proyecto):
 			num_p=0
 			#Se consultan los indicadores asociados al proyecto
 			l_indicadores = obj.proyecto.indicadores.all().order_by('factor')
+			#Se consultan las operaciones mentales asciadas al proyecto
+			l_operaciones = obj.proyecto.operaciones.all()
 			#Se consultan los paramétros y validaciones
 			parametros=Parametro.objects.all().order_by('tipo', '-ponderacion')
 			check=Validacion.objects.filter(proyecto=obj.proyecto.pk)
@@ -100,7 +102,7 @@ def validar(request, id_proyecto):
 					l_valores_iniciales.append({'proyecto':obj.proyecto.pk, 'parametro':p})
 				#Se sobreescribe el set de formaularios antes de enviar para que tenga los valores iniciales
 				f_validar = formularioValidar(queryset=consulta, initial=l_valores_iniciales)
-			data={'errores':l_errores, 'indicadores':l_indicadores, 'tipos':tipos, 'parametros':parametros, 'formValidar':f_validar, 'usuario':request.user, 'objeto':obj, 'espec':obj.espec_lom, 'autores':obj.autores.all(), 'keywords':obj.palabras_claves.all(), 'proyecto':obj.proyecto}
+			data={'errores':l_errores, 'indicadores':l_indicadores, 'operaciones':l_operaciones, 'tipos':tipos, 'parametros':parametros, 'formValidar':f_validar, 'usuario':request.user, 'objeto':obj, 'espec':obj.espec_lom, 'autores':obj.autores.all(), 'keywords':obj.palabras_claves.all(), 'proyecto':obj.proyecto}
 			return render_to_response('validar.html',data,context_instance=RequestContext(request))
 		else:
 			return HttpResponseRedirect('/')

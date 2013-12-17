@@ -86,6 +86,18 @@ class Parametro(models.Model):
 	def __unicode__(self):
 		return self.nombre
 
+class OperacionMental(models.Model):
+	"""
+	Modelo que representa las operaciones mentales básicas las cuales pueden ser asociadas a los proyectos académicos
+	"""
+	operacion = models.CharField(help_text="Operación mental básica", verbose_name = 'Operación Mental', max_length=80, unique=True)
+	descripcion = models.TextField(help_text="Descripción de la Operación mental básica", verbose_name = 'Descripción')
+	class Meta:
+		verbose_name = "Operación Mental"
+		verbose_name_plural= "Operaciones Mentales"
+	def __unicode__(self):
+		return self.operacion
+
 class Proyecto(models.Model):
 	"""
 	Modelo que representa los proyectos académicos
@@ -97,6 +109,7 @@ class Proyecto(models.Model):
 	programa = models.ForeignKey(Programa, help_text='Programa académico al que pertenece el proyecto', verbose_name='Programa')
 	indicadores = models.ManyToManyField(Indicador, blank=True, null=True, help_text="Relacione el/los Indicador (es) de comptencia", verbose_name= 'Indicador de Competencia')
 	parametros = models.ManyToManyField(Parametro, through="Validacion", blank=True, null=True)
+	operaciones = models.ManyToManyField(OperacionMental, blank=True, null=True, help_text="Relacione la/las Operación (es) Mental (es) básica (s) para el proyecto", verbose_name= 'Operaciones Mentales')
 	calificacion = models.CharField(help_text="Calificación final del proyecto", max_length=1, choices=opc.get_calif(), default=opc.get_calif()[0][0])
 	nota = models.DecimalField(help_text="Nota numérica de la validación del proyecto", verbose_name="Nota Porcentual", max_digits=4, decimal_places=2)
 	def __unicode__(self):
